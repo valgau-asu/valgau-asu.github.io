@@ -1,0 +1,68 @@
+# Personal website — Valentin Gaucher
+
+Plain HTML/CSS/JS. No build step, no dependencies. Edit a file, refresh the browser.
+
+## Files
+
+```
+index.html          About / landing page
+projects.html       Project cards
+publications.html   Publication list
+media.html          Talks, videos, slides
+css/style.css       All styling. Colors live in :root at the top.
+js/main.js          Mobile menu + footer year
+assets/img/         Images (placeholders are .svg — replace with real .jpg)
+assets/pdf/         CV, papers, slides, BibTeX
+.nojekyll           Tells GitHub Pages to serve files as-is
+```
+
+## Preview locally
+
+```bash
+cd ~/Documents/Website && python3 -m http.server 8000
+```
+
+Then open http://localhost:8000 — Ctrl-C in the terminal to stop.
+
+## Editing
+
+- **Text and links:** open the `.html` file and edit between the tags. Anything in
+  `[square brackets]` or named `YOUR_USERNAME` / `VIDEO_ID` is a placeholder to replace.
+- **Adding a project or paper:** each page has a commented block marked
+  `COPY THIS BLOCK` — duplicate it and fill it in.
+- **The nav bar** is copied into all four pages. If you add a page, add the link in
+  all four, and set `aria-current="page"` on the current page's own link.
+- **Colors and fonts:** the `:root` block at the top of `css/style.css`. Change
+  `--accent` to restyle the whole site. Dark mode is handled automatically.
+
+## Images
+
+Replace the `.svg` placeholders with real images and update the `src` in the HTML:
+
+- `profile` — square, 600×600 is plenty
+- project thumbnails — 16:9, around 800×450
+- Keep files under ~500 KB so pages stay fast.
+
+Once you have a real profile photo, also point `og:image` in `index.html` at it
+using a full URL (`https://YOUR_USERNAME.github.io/assets/img/profile.jpg`) — that
+is what shows when someone shares your link.
+
+## Deploying to GitHub Pages
+
+1. Create a repo on GitHub named exactly **`YOUR_USERNAME.github.io`** (public).
+2. Then, from this folder:
+
+```bash
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_USERNAME.github.io.git
+git branch -M main
+git push -u origin main
+```
+
+3. On GitHub: **Settings → Pages → Source: Deploy from a branch → `main` / `(root)`**.
+4. Your site appears at `https://YOUR_USERNAME.github.io` within a minute or two.
+
+Afterwards, publishing changes is just:
+
+```bash
+git add -A && git commit -m "Update site" && git push
+```
