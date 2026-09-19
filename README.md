@@ -16,13 +16,18 @@ assets/pdf/         CV, papers, slides, BibTeX
 .nojekyll           Tells GitHub Pages to serve files as-is
 ```
 
-## Preview locally
+## Preview locally (with live reload)
 
 ```bash
-cd ~/Documents/Website && python3 -m http.server 8000
+cd ~/Documents/Website && python3 dev.py
 ```
 
-Then open http://localhost:8000 — Ctrl-C in the terminal to stop.
+Open http://localhost:8000. Save any file and the browser refreshes itself —
+no need to hit reload. Ctrl-C in the terminal to stop.
+
+`dev.py` is a development tool only. It injects a small reload script into pages
+as it serves them; your files on disk are never modified, and GitHub Pages serves
+them plainly. Pass a port if 8000 is busy: `python3 dev.py 3000`.
 
 ## Editing
 
