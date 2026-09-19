@@ -190,23 +190,44 @@ main { padding: 56px 0 80px; }
   margin-bottom: 1.2em;
 }
 
-/* Matches the photo's width so the two align as one block. The logo art is
-   grey, so it sits legibly on both the light and dark backgrounds. */
-.hero-logo {
-  width: 180px;
-  height: auto;
+/* Affiliation logos ------------------------------------------------------
+   The three source files are inconsistent: ASU is very light grey art on a
+   transparent background, ISAE is white art on a solid near-black box, and
+   JPL is full colour on transparent. The rules below even them out so the
+   group reads as one block in both themes. */
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 180px;          /* same width as the photo and the JPL lockup */
 }
 
-/* The logo art is mid-grey: full strength on the light background, dialled
-   back on the dark one so it does not glare next to the photo. */
+/* ASU and ISAE are matched on height, not width, so they look optically
+   equal despite different proportions. */
+.logo-row .logo { height: 60px; width: auto; }
+
+/* JPL is a wide horizontal lockup, so it spans the photo's full width. */
+.logo-jpl { width: 180px; height: auto; }
+
+/* ASU's art is near-white: darken it so it is visible on the light page. */
+.logo-asu { filter: brightness(0.62); }
+
+/* ISAE ships as white-on-black. Rounding the box keeps it from reading as a
+   hard rectangle next to the two transparent logos. */
+.logo-isae { border-radius: 3px; }
+
 @media (prefers-color-scheme: dark) {
-  .hero-logo { opacity: 0.8; }
+  .logo-asu { filter: none; }        /* light art already reads on dark */
+  .logo-jpl { opacity: 0.9; }
 }
 
 @media (max-width: 640px) {
   .hero { grid-template-columns: 1fr; gap: 24px; }
   .hero-photo { width: 140px; height: 140px; }
-  .hero-logo { width: 140px; }
+  .logo-jpl { width: 140px; }
+  .logo-row { width: 140px; }
+  .logo-row .logo { height: 46px; }
 }
 
 /* --------------------------------------------------------------- links -- */
