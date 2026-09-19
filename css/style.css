@@ -348,6 +348,9 @@ main { padding: 56px 0 80px; }
   max-width: var(--measure);
 }
 
+/* Optional related links under a position (press coverage, project pages). */
+.exp-links { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.85rem; margin-top: 10px; }
+
 /* Dates, place and duration sit in a right-hand rail on wide screens. */
 .exp-meta { text-align: right; }
 .exp-meta p { margin: 0; max-width: none; }
