@@ -171,7 +171,7 @@ main { padding: 56px 0 80px; }
 }
 
 /* Photo + affiliation logo stack in the hero's left column. */
-.hero-aside { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.hero-aside { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; width: 180px; }
 
 .hero-photo {
   width: 180px;
@@ -191,43 +191,42 @@ main { padding: 56px 0 80px; }
 }
 
 /* Affiliation logos ------------------------------------------------------
-   The three source files are inconsistent: ASU is very light grey art on a
-   transparent background, ISAE is white art on a solid near-black box, and
-   JPL is full colour on transparent. The rules below even them out so the
-   group reads as one block in both themes. */
+   Stacked under the photo: ASU, ISAE-SUPAERO, then NASA JPL.
+   The source files are inconsistent -- ASU is pure white art on transparent,
+   ISAE is white art on a solid near-black box, JPL is full colour on
+   transparent -- so each needs its own treatment to read in both themes. */
 
-.logo-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 180px;          /* same width as the photo and the JPL lockup */
+.logo-asu,
+.logo-jpl {
+  width: 180px;                    /* same width as the photo */
+  height: auto;
 }
 
-/* ASU and ISAE are matched on height, not width, so they look optically
-   equal despite different proportions. */
-.logo-row .logo { height: 60px; width: auto; }
+/* Narrower than ASU and centred within the column, as requested. */
+.logo-isae {
+  width: 120px;                    /* about two thirds of ASU's width */
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 3px;              /* softens the logo's hard black box */
+}
 
-/* JPL is a wide horizontal lockup, so it spans the photo's full width. */
-.logo-jpl { width: 180px; height: auto; }
-
-/* ASU's art is near-white: darken it so it is visible on the light page. */
-.logo-asu { filter: brightness(0.62); }
-
-/* ISAE ships as white-on-black. Rounding the box keeps it from reading as a
-   hard rectangle next to the two transparent logos. */
-.logo-isae { border-radius: 3px; }
+/* ASU's art is pure white: on the light page it would be invisible, so it is
+   knocked down to a grey close to the body text. Untouched in dark mode. */
+.logo-asu { filter: brightness(0.35); }
 
 @media (prefers-color-scheme: dark) {
-  .logo-asu { filter: none; }        /* light art already reads on dark */
+  .logo-asu { filter: none; }
   .logo-jpl { opacity: 0.9; }
 }
 
 @media (max-width: 640px) {
   .hero { grid-template-columns: 1fr; gap: 24px; }
   .hero-photo { width: 140px; height: 140px; }
-  .logo-jpl { width: 140px; }
-  .logo-row { width: 140px; }
-  .logo-row .logo { height: 46px; }
+  .hero-aside { width: 140px; }
+  .logo-asu, .logo-jpl { width: 140px; }
+  .logo-isae { width: 93px; }
 }
 
 /* --------------------------------------------------------------- links -- */
