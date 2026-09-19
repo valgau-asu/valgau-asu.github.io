@@ -6,6 +6,7 @@ Plain HTML/CSS/JS. No build step, no dependencies. Edit a file, refresh the brow
 
 ```
 index.html          About / landing page
+experience.html     Research and engineering positions
 projects.html       Project cards
 publications.html   Publication list
 media.html          Talks, videos, slides
@@ -36,8 +37,8 @@ them plainly. Pass a port if 8000 is busy: `python3 dev.py 3000`.
   `[square brackets]` or named `YOUR_USERNAME` / `VIDEO_ID` is a placeholder to replace.
 - **Adding a project or paper:** each page has a commented block marked
   `COPY THIS BLOCK` — duplicate it and fill it in.
-- **The nav bar** is copied into all four pages. If you add a page, add the link in
-  all four, and set `aria-current="page"` on the current page's own link.
+- **The nav bar** is copied into all five pages. If you add a page, add the link in
+  all five, and set `aria-current="page"` on the current page's own link.
 - **Colors and fonts:** the `:root` block at the top of `css/style.css`. Change
   `--accent` to restyle the whole site. Dark mode is handled automatically.
 

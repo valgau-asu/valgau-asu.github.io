@@ -315,6 +315,55 @@ main { padding: 56px 0 80px; }
 .pub-venue { font-size: 0.92rem; color: var(--text-faint); font-style: italic; margin: 0 0 8px; }
 .pub-links { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.85rem; }
 
+/* ---------------------------------------------------------- experience -- */
+
+.exp-list { list-style: none; margin: 0; padding: 0; }
+
+.exp {
+  display: grid;
+  grid-template-columns: 1fr 170px;
+  gap: 28px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border);
+}
+.exp:last-child { border-bottom: 0; }
+
+.exp-org {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+
+.exp-role {
+  margin: 0 0 10px;
+  font-size: 0.94rem;
+  color: var(--accent);
+}
+
+.exp-desc {
+  margin: 0;
+  font-size: 0.94rem;
+  color: var(--text-muted);
+  max-width: var(--measure);
+}
+
+/* Dates, place and duration sit in a right-hand rail on wide screens. */
+.exp-meta { text-align: right; }
+.exp-meta p { margin: 0; max-width: none; }
+.exp-dates { font-size: 0.9rem; color: var(--text); }
+.exp-place { font-size: 0.9rem; color: var(--text-muted); }
+.exp-length { font-size: 0.82rem; color: var(--text-faint); margin-top: 4px !important; }
+
+@media (max-width: 640px) {
+  /* The rail becomes a single line above the role, which reads better than a
+     narrow squeezed column. */
+  .exp { grid-template-columns: 1fr; gap: 8px; }
+  .exp-meta { text-align: left; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+  .exp-meta p { font-size: 0.85rem; }
+  .exp-length { margin-top: 0 !important; }
+}
+
 /* --------------------------------------------------------------- media -- */
 
 .video-grid {
