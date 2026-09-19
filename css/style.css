@@ -315,6 +315,21 @@ main { padding: 56px 0 80px; }
 .pub-venue { font-size: 0.92rem; color: var(--text-faint); font-style: italic; margin: 0 0 8px; }
 .pub-links { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.85rem; }
 
+/* -------------------------------------------------- cross-page anchors -- */
+
+/* The header is sticky, so an anchor jump would otherwise land the target
+   underneath it. Also give the linked entry a brief tint so it is obvious
+   which one the link meant. */
+.pub[id],
+.exp[id] { scroll-margin-top: 90px; }
+
+.pub:target,
+.exp:target {
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 10px var(--accent-soft);
+  border-radius: 3px;
+}
+
 /* ---------------------------------------------------------- experience -- */
 
 .exp-list { list-style: none; margin: 0; padding: 0; }
