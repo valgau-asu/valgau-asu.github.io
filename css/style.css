@@ -170,6 +170,9 @@ main { padding: 56px 0 80px; }
   margin-bottom: 3rem;
 }
 
+/* Photo + affiliation logo stack in the hero's left column. */
+.hero-aside { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+
 .hero-photo {
   width: 180px;
   height: 180px;
@@ -187,9 +190,23 @@ main { padding: 56px 0 80px; }
   margin-bottom: 1.2em;
 }
 
+/* Matches the photo's width so the two align as one block. The logo art is
+   grey, so it sits legibly on both the light and dark backgrounds. */
+.hero-logo {
+  width: 180px;
+  height: auto;
+}
+
+/* The logo art is mid-grey: full strength on the light background, dialled
+   back on the dark one so it does not glare next to the photo. */
+@media (prefers-color-scheme: dark) {
+  .hero-logo { opacity: 0.8; }
+}
+
 @media (max-width: 640px) {
   .hero { grid-template-columns: 1fr; gap: 24px; }
   .hero-photo { width: 140px; height: 140px; }
+  .hero-logo { width: 140px; }
 }
 
 /* --------------------------------------------------------------- links -- */
