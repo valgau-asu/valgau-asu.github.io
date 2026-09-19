@@ -192,9 +192,8 @@ main { padding: 56px 0 80px; }
 
 /* Affiliation logos ------------------------------------------------------
    Stacked under the photo: ASU, ISAE-SUPAERO, then NASA JPL.
-   The source files are inconsistent -- ASU is pure white art on transparent,
-   ISAE is white art on a solid near-black box, JPL is full colour on
-   transparent -- so each needs its own treatment to read in both themes. */
+   Files live in pictures/logo/. ASU and ISAE are pure white art on a
+   transparent background; JPL is full colour on transparent. */
 
 .logo-asu,
 .logo-jpl {
@@ -209,15 +208,17 @@ main { padding: 56px 0 80px; }
   display: block;
   margin-left: auto;
   margin-right: auto;
-  border-radius: 3px;              /* softens the logo's hard black box */
 }
 
-/* ASU's art is pure white: on the light page it would be invisible, so it is
-   knocked down to a grey close to the body text. Untouched in dark mode. */
-.logo-asu { filter: brightness(0.35); }
+/* White art would be invisible on the light page, so both are knocked down to
+   a grey close to the body text. Left untouched in dark mode, where white is
+   exactly what the background needs. */
+.logo-asu,
+.logo-isae { filter: brightness(0.35); }
 
 @media (prefers-color-scheme: dark) {
-  .logo-asu { filter: none; }
+  .logo-asu,
+  .logo-isae { filter: none; }
   .logo-jpl { opacity: 0.9; }
 }
 

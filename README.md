@@ -11,8 +11,9 @@ publications.html   Publication list
 media.html          Talks, videos, slides
 css/style.css       All styling. Colors live in :root at the top.
 js/main.js          Mobile menu + footer year
-assets/img/         Images (placeholders are .svg — replace with real .jpg)
-assets/pdf/         CV, papers, slides, BibTeX
+pictures/           Photo and project images
+pictures/logo/      Affiliation logos
+pdfs/               CV, papers, slides, BibTeX
 .nojekyll           Tells GitHub Pages to serve files as-is
 ```
 
@@ -44,7 +45,7 @@ them plainly. Pass a port if 8000 is busy: `python3 dev.py 3000`.
 
 Replace the `.svg` placeholders with real images and update the `src` in the HTML:
 
-- `profile` — square, 600×600 is plenty
+- `profile` — the hero photo; portrait is fine, CSS crops it to a square
 - project thumbnails — 16:9, around 800×450
 - Keep files under ~500 KB so pages stay fast.
 
