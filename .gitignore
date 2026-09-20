@@ -6,3 +6,6 @@
 # Paper sources for the project write-ups. Kept locally; the site links the
 # published PDFs instead. Delete this line if you want them in the repo.
 projects_content/
+
+# Airbus internship report: kept locally, not published.
+pdfs/SFE_Article_Airbus.pdf
