@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Other Projects — Valentin Gaucher</title>
+<meta name="description" content="Graduate coursework and earlier engineering projects by Valentin Gaucher: robotics, rocketry and orbital mechanics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="phd-research.html">PhD Research</a></li>
+      <li><a href="other-projects.html" aria-current="page">Other Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="page-intro">
+      <h1>Other Projects</h1>
+      <p>
+        Graduate coursework and earlier projects.
+      </p>
+    </div>
+
+    <h2 class="section-head">Coursework &mdash; Arizona State University</h2>
+    <p class="section-note">
+      Graduate coursework at ASU. Both built on a Dobot Magician 4-DOF arm with an
+      overhead camera.
+    </p>
+
+    <div class="card-grid">
+
+      <article class="card">
+        <img class="card-thumb" src="pictures/projects/thumb-maze.jpg" alt="Solved maze path overlaid on the camera view">
+        <div class="card-body">
+          <h3><a href="project-maze-solver.html">Vision-based maze solving</a></h3>
+          <p>
+            A 4-DOF arm reads a printed maze from an overhead camera and traces the
+            solution: affine hand&ndash;eye calibration to 1.34 mm, perspective rectification,
+            occupancy grid, and BFS path planning.
+          </p>
+          <ul class="tags">
+            <li>OpenCV</li>
+            <li>Path planning</li>
+            <li>RAS 545</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <img class="card-thumb" src="pictures/projects/thumb-llm.jpg" alt="Camera view of coloured blocks detected and labelled">
+        <div class="card-body">
+          <h3><a href="project-llm-pick-place.html">LLM-driven pick and place</a></h3>
+          <p>
+            Plain-English commands drive the arm, with Gemini function calling acting as the
+            controller &mdash; resolving spatial references like &ldquo;on top of&rdquo; into
+            calibrated metric offsets.
+          </p>
+          <ul class="tags">
+            <li>LLM</li>
+            <li>HSV segmentation</li>
+            <li>RAS 545</li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+
+    <h2 class="section-head">Coursework &mdash; ISAE-SUPAERO</h2>
+    <p class="section-note">
+      Team and individual projects from my master&rsquo;s at ISAE-SUPAERO.
+    </p>
+
+    <div class="card-grid">
+
+      <article class="card">
+        <img class="card-thumb" src="pictures/projects/thumb-comets.jpg" alt="Walker constellation of weather satellites around Earth">
+        <div class="card-body">
+          <h3><a href="project-comets.html">COMETS: a weather satellite constellation</a></h3>
+          <p>
+            A six-person Integrated Team Project designing a 40-satellite meteorological
+            constellation &mdash; GNSS radio occultation and microwave sounding on a platform
+            shared across several student missions to cut cost. I owned AOCS and mission analysis.
+          </p>
+          <ul class="tags">
+            <li>Mission design</li>
+            <li>Constellations</li>
+            <li>Systems engineering</li>
+            <li>Team project</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <img class="card-thumb" src="pictures/projects/thumb-pid.png" alt="Step response comparison between genetic and pole-compensation tuning">
+        <div class="card-body">
+          <h3><a href="project-genetic-pid.html">PID tuning with a genetic algorithm</a></h3>
+          <p>
+            Treating controller tuning as a search problem. Beats pole-compensation tuning
+            on both settling time and overshoot, in ~50 generations against a space that
+            would take 92,000 years to enumerate.
+          </p>
+          <ul class="tags">
+            <li>Optimization</li>
+            <li>Genetic algorithms</li>
+            <li>PID</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+
+    <h2 class="section-head">Coursework &mdash; Politecnico di Milano</h2>
+    <p class="section-note">
+      From my exchange at PoliMi.
+    </p>
+
+    <div class="card-grid">
+
+      <article class="card">
+        <img class="card-thumb" src="pictures/projects/thumb-quad.png" alt="Simplified quadrotor model diagram">
+        <div class="card-body">
+          <h3><a href="project-quadrotor-control.html">Robust quadrotor attitude control</a></h3>
+          <p>
+            Full quadrotor model down to the motor electro-mechanics, then altitude and
+            attitude loops synthesised with <code>hinfstruct</code> against &plusmn;3&sigma;
+            parameter uncertainty, with a state observer and Monte Carlo validation.
+          </p>
+          <ul class="tags">
+            <li>Robust control</li>
+            <li>H&infin;</li>
+            <li>Observer</li>
+            <li>MATLAB</li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+
+    <h2 class="section-head">Coursework &mdash; ENSTA</h2>
+    <p class="section-note">
+      Vehicle control and system identification.
+    </p>
+
+    <div class="card-grid">
+
+      <article class="card">
+        <img class="card-thumb" src="pictures/projects/thumb-parking.jpg" alt="The radio-controlled car used for the parking experiments">
+        <div class="card-body">
+          <h3><a href="project-parking.html">Automated parallel parking</a></h3>
+          <p>
+            Detection conditions, trajectory geometry and steering identification for an
+            automated parking manoeuvre, developed and tested on a radio-controlled car
+            because real vehicle data is confidential.
+          </p>
+          <ul class="tags">
+            <li>Trajectory planning</li>
+            <li>System identification</li>
+            <li>Ultrasonic sensing</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+
+    <h2 class="section-head">Earlier work</h2>
+    <p class="section-note">
+      Projects from before the PhD, kept here because they are where the interest and
+      fun started.
+    </p>
+
+    <div class="card-grid">
+
+      <article class="card">
+        <img class="card-thumb" src="pictures/projects/thumb-rocket.jpg" alt="The recovered mini-rocket after its flight">
+        <div class="card-body">
+          <h3><a href="project-rocket.html">Tonnerre de Brest: mini-rocket with onboard altimetry</a></h3>
+          <p>
+            Designing, building and flying a student mini-rocket with a pressure-based
+            altitude experiment, launched at C&rsquo;space.
+          </p>
+          <ul class="tags">
+            <li>Rocketry</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <img class="card-thumb" src="pictures/projects/thumb-orbits.png" alt="Simulated transfer trajectory between two Lagrange point orbits">
+        <div class="card-body">
+          <h3><a href="project-halo-orbits.html">Halo orbits and stability at the Lagrange points</a></h3>
+          <p>
+            A self-directed study of the circular restricted three-body problem: monodromy
+            analysis, invariant manifolds, and a shooting method for periodic orbits.
+            Written during my classe pr&eacute;paratoire.
+          </p>
+          <ul class="tags">
+            <li>CR3BP</li>
+            <li>Dynamical systems</li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

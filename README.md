@@ -7,12 +7,12 @@ Plain HTML/CSS/JS. No build step, no dependencies. Edit a file, refresh the brow
 ```
 index.html          About / landing page
 experience.html     Research and engineering positions
-projects.html       Project cards
+phd-research.html   PhD research project cards
+other-projects.html Coursework and earlier project cards
 project-*.html      Long-form project write-ups (KaTeX for equations).
-                    Research and coursework are kept in separate sections
-                    on projects.html and coursework pages carry a badge.
+                    Coursework and earlier-work pages carry a badge so they
+                    are never mistaken for research.
 publications.html   Publication list
-media.html          Talks, videos, slides
 css/style.css       All styling. Colors live in :root at the top.
 js/main.js          Mobile menu + footer year
 pictures/           Photo and project images
@@ -45,7 +45,7 @@ them plainly. Pass a port if 8000 is busy: `python3 dev.py 3000`.
   or `\\[...\\]` (display) and rendered by KaTeX, loaded from a CDN on those two
   pages only. It is the site's one external dependency.
 - **The nav bar** is copied into all four top-level pages. If you add a page, add the link in
-  all four, and set `aria-current="page"` on the current page's own link.
+  all five, and set `aria-current="page"` on the current page's own link.
 - **Colors and fonts:** the `:root` block at the top of `css/style.css`. Change
   `--accent` to restyle the whole site. Dark mode is handled automatically.
 

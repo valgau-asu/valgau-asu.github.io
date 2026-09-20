@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COMETS Satellite Constellation — Valentin Gaucher</title>
+<meta name="description" content="Integrated Team Project at ISAE-SUPAERO: designing COMETS, a 40-satellite meteorological constellation using GNSS radio occultation and microwave sounding on a shared platform.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="phd-research.html">PhD Research</a></li>
+      <li><a href="other-projects.html" aria-current="page">Other Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="other-projects.html">&larr; Other Projects</a></p>
+
+    <p class="course-badge">Integrated Team Project &middot; ISAE-SUPAERO</p>
+    <h1>COMETS: a constellation for global weather coverage</h1>
+    <p class="project-meta">
+      With Alexia Daugieras (team leader), Thibault Kiehl, Timot&eacute; Lombard,
+      No&eacute;mie Rousselle and Susmitha Patnala.
+    </p>
+    <div class="pub-links">
+      <a href="pdfs/comets-article.pdf" target="_blank" rel="noopener">Article (PDF)</a>
+    </div>
+
+    <figure class="fig fig-wide">
+      <img src="pictures/projects/comets/comets-walker.jpg" alt="Walker constellation of 40 satellites in five orbital planes around the Earth." width="1000" height="515">
+      <figcaption>The 40/5/1 Walker constellation &mdash; forty satellites across five planes.</figcaption>
+    </figure>
+
+    <h2>The brief</h2>
+    <p>
+      Design a satellite constellation capable of meteorological measurement using two
+      complementary instruments: <strong>GNSS radio occultation</strong> (GNSS-RO) and a
+      <strong>microwave sounder</strong> (MWS). Weather data matters for climate research and
+      for tracking hazardous events like hurricanes and typhoons; the driver here was better
+      spatial and temporal resolution than existing coverage, plus reliability.
+    </p>
+
+    <h2>My contribution</h2>
+    <p class="callout">
+      On a six-person team I owned two subsystems: <strong>AOCS</strong> (attitude and orbit
+      control) and <strong>mission analysis</strong>.
+    </p>
+    <p>
+      <strong>AOCS.</strong> The pointing budget was derived from the payload rather than
+      assumed &mdash; BOWIE-M's specification sets what the platform has to deliver, giving a
+      required pointing accuracy of \(0.027^\circ\) and an agility of \(0.809^\circ/\mathrm{s}\)
+      against a mission need of \(0.44^\circ\) and \(0.33^\circ/\mathrm{s}\). That second
+      figure has a physical origin worth stating: at 7.533 km/s orbital velocity, holding the
+      instrument on a fixed ground target costs \(0.33^\circ\) of slew every second. From
+      there I traded actuators &mdash; reaction wheels against control moment gyros against
+      magnetorquers, where the CMG avoids the wheel's desaturation problem by steering its
+      momentum vector instead of spinning up &mdash; and sensors, including fibre-optic against
+      hemispherical resonator gyroscopes, then sized the set and produced the subsystem layout
+      and its mass and power budget.
+    </p>
+    <p>
+      <strong>Mission analysis.</strong> Launcher trade-off and SSO capability, launch strategy
+      and configuration under the fairing, and the early orbit phase. Then the orbitography
+      that fixes the mission: altitude and inclination selection, and the Walker constellation
+      geometry. Finally station-keeping &mdash; quantifying how orbital disturbances perturb
+      each orbital element and what that demands of the propulsion budget &mdash; along with
+      constellation lifetime and end-of-life deorbit.
+    </p>
+
+    <h2>Mission design</h2>
+    <p>
+      The coverage requirement &mdash; the whole Earth in 20 minutes or less &mdash; sets the
+      constellation geometry. A <strong>Walker configuration of five planes with eight
+      satellites each</strong> meets it.
+    </p>
+    <p>
+      Orbit choice follows from second-order concerns rather than coverage alone.
+      <strong>Sun-synchronous orbits</strong> give consistent illumination, which both
+      simplifies the solar array sizing and makes thermal design tractable &mdash; two
+      subsystems bought with one decision. The <strong>650 km altitude</strong> is a
+      compromise: high enough that drag perturbations stay small and lifetime-extension
+      manoeuvres are largely unnecessary, low enough to meet the instrument requirements. That
+      altitude implies an inclination near 98&deg;, reachable by a launcher like Ariane 6.
+    </p>
+
+    <h2>Instruments</h2>
+    <p>
+      <strong>GNSS-RO</strong> reads radio signals from GNSS satellites as they pass through
+      the atmosphere, recovering temperature and water-vapour profiles from how the signal
+      bends. The chosen unit is Airbus's LION 1000 series, small, multi-constellation
+      (Galileo, GPS, Glonass, Compass) and rated for 15 years &mdash; comfortably beyond the
+      mission's 10-year duration.
+    </p>
+    <p>
+      <strong>Microwave sounding</strong> measures the atmosphere's thermal emission across
+      frequencies to recover its vertical temperature and moisture structure. Ball Aerospace's
+      BOWIE-M was selected at TRL 6 &mdash; a deliberate choice to keep technology risk low.
+    </p>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/comets/comets-gnss.jpg" alt="The LION GNSS radio occultation receiver unit." width="700" height="553">
+      <img src="pictures/projects/comets/comets-mws.jpg" alt="The BOWIE-M microwave sounder instrument." width="700" height="268">
+      <figcaption>
+        GNSS-RO: LION 1000 series (6 kg, 20 W). MWS: BOWIE-M (35 kg, 70 W,
+        66 &times; 39 &times; 44 cm).
+      </figcaption>
+    </figure>
+
+    <h2>COCON: sharing a platform across projects</h2>
+    <p>
+      The part of this project worth dwelling on is not the spacecraft but the organisation
+      around it. COCON was a student initiative across the Master TAS ASTRO cohort to build
+      <em>one</em> common platform serving several different constellation projects at once.
+      The argument was twofold: more people working each subsystem produces more robust
+      results, and a single production run lowers cost across every mission using it.
+    </p>
+    <p>
+      The consequences are visible in the design. The hexagonal primary structure was driven
+      not by COMETS' needs but by <em>another</em> constellation's optical instruments and their
+      pointing-accuracy requirements. Aluminium for the primary structure, carbon/epoxy
+      composite for appendages and tanks. Four Exotrail micro-XL thrusters, in a modular
+      arrangement that allows more to be added.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/comets/comets-platform.jpg" alt="The shared COCON hexagonal satellite platform." width="900" height="476">
+      <figcaption>The shared COCON platform, hexagonal by inheritance from another constellation's optical payload.</figcaption>
+    </figure>
+
+    <p>
+      COCON also supplies a separate <em>Mover</em> constellation, designed by another ITP
+      group, which COMETS uses instead of its own propulsion for three distinct jobs: phasing
+      during the early orbit phase, deorbiting at end of life, and RAAN manoeuvres to extend
+      constellation lifetime if a satellite fails. Outsourcing those manoeuvres is what lets
+      the COMETS propulsion budget stay small.
+    </p>
+
+    <h2>The satellite</h2>
+    <table class="data-table">
+      <caption>COMETS satellite key features.</caption>
+      <tbody>
+        <tr><th>Orbit</th><td>Circular SSO, 650 km, \(i \approx 98^\circ\)</td></tr>
+        <tr><th>Instruments</th><td>MWS: BOWIE-M (Ball Aerospace) &middot; GNSS-RO: LION 1000 series (Airbus)</td></tr>
+        <tr><th>Mass</th><td>&lt; 350 kg</td></tr>
+        <tr><th>Architecture</th><td>Hexagonal</td></tr>
+        <tr><th>Lifetime</th><td>&gt; 10 years</td></tr>
+        <tr><th>Avionics</th><td>Spaceteq OBC-GR712 (LEO3FT processor)</td></tr>
+        <tr><th>Communication</th><td>Laser: Condor MK3</td></tr>
+        <tr><th>Thrusters</th><td>Exotrail micro-XL</td></tr>
+        <tr><th>Battery</th><td>SAFT VES16 Li-ion</td></tr>
+        <tr><th>Solar array</th><td>3G30C cells (Azure Space)</td></tr>
+      </tbody>
+    </table>
+
+    <figure class="fig">
+      <img src="pictures/projects/comets/comets-arch.png" alt="Block diagram of the COMETS satellite architecture and its subsystems." width="900" height="236">
+      <figcaption>Satellite architecture across the subsystems.</figcaption>
+    </figure>
+
+    <h2>Why it mattered</h2>
+    <p>
+      A meteorological constellation of this kind is uncommon, and the case made for it was
+      strategic as much as technical: it would give Europe sovereign access to its own global
+      weather data. The full study covered mission and environment analysis, instruments,
+      thermal control, AOCS, propulsion, communications, on-board data handling, power,
+      mission phases and the final mass and cost budgets.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PhD Research — Valentin Gaucher</title>
+<meta name="description" content="PhD research by Valentin Gaucher at the ASU RISE Lab: hybrid systems, contact modelling and optimal control for aerial robots.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="phd-research.html" aria-current="page">PhD Research</a></li>
+      <li><a href="other-projects.html">Other Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="page-intro">
+      <h1>PhD Research</h1>
+      <p>
+        Work from the Robotics and Intelligent SystEms (RISE) Lab at Arizona State
+        University on aerial robots in contact-rich environments. Each page summarises
+        the problem, the core result and the numbers behind it.
+      </p>
+    </div>
+
+    <div class="card-grid">
+
+      <article class="card">
+        <img class="card-thumb" src="pictures/projects/thumb-dq.png" alt="UAV trajectories after a wall impact in simulation">
+        <div class="card-body">
+          <h3><a href="project-dual-quaternion.html">Dual quaternion collision recovery</a></h3>
+          <p>
+            A closed-form hybrid reset map on the dual quaternion manifold that keeps
+            normal&ndash;tangential impulse coupling in a single algebraic operation. Proven
+            hybrid Lyapunov stability, 25% fewer FLOPs than the matrix formulation.
+          </p>
+          <ul class="tags">
+            <li>Hybrid systems</li>
+            <li>SE(3)</li>
+            <li>MuJoCo</li>
+            <li>L-CSS 2026</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <img class="card-thumb" src="pictures/projects/thumb-mpc.png" alt="Diagram of lifted switching time against a fixed grid">
+        <div class="card-body">
+          <h3><a href="project-hybrid-mpc.html">Switch-time-aware hybrid MPC</a></h3>
+          <p>
+            Lifting the switching instant into the decision vector so a real-time SQP solver
+            can optimise impact timing. KKT conditions consistent with the Hybrid Minimum
+            Principle, and a 116&times; speedup over complementarity formulations.
+          </p>
+          <ul class="tags">
+            <li>Optimal control</li>
+            <li>MPC</li>
+            <li>Hybrid Minimum Principle</li>
+            <li>CDC 2026</li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

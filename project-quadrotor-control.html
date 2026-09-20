@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Robust Quadrotor Attitude Control — Valentin Gaucher</title>
+<meta name="description" content="Course project: modelling a quadrotor and designing a robust attitude controller with an observer, validated by Monte Carlo over parameter uncertainty.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="phd-research.html">PhD Research</a></li>
+      <li><a href="other-projects.html" aria-current="page">Other Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="other-projects.html">&larr; Other Projects</a></p>
+
+    <p class="course-badge">Course project &middot; Politecnico di Milano</p>
+    <h1>Modelling and robust attitude control of a quadrotor</h1>
+    <p class="project-meta">
+      With Salvatore Annunziata and Riccardo Bossi &middot; full quadrotor model, altitude and
+      attitude loops, robust synthesis with an observer.
+    </p>
+
+    <h2>Model</h2>
+    <p>
+      The model couples the rigid-body dynamics to the electro-mechanical equations of the
+      four motors, which is what later lets the controller be designed against real actuator
+      limits rather than an idealised torque input. Three frames: an inertial ground frame
+      \(R_0\), a body frame \(R\) with its axes along the arms, and a frame \(R_i\) per
+      propeller.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/quadrotor/quad-model.png" alt="Simplified diagram of the quadrotor with body frame axes and the four propellers labelled." width="900" height="606">
+      <figcaption>Simplified quadrotor model with the body frame and the four propeller frames.</figcaption>
+    </figure>
+
+    <p>Each motor is reduced to a first-order electro-mechanical relation:</p>
+    \[ J_r\dot{\tilde{\omega}}_i = \left(\tilde{u}_i - K_m\tilde{\omega}_i\right)\frac{K_m}{R_m} - 2b\bar{\omega}\tilde{\omega}_i \]
+    <p>
+      with \(\tilde{u}_i\) the motor voltage, \(R_m\) the internal resistance and \(K_m\) the
+      torque constant. The dynamics then split into a vertical subsystem and lateral /
+      longitudinal subsystems that can be controlled separately.
+    </p>
+
+    <h2>Altitude loop</h2>
+    <p>
+      Altitude is driven by the summed motor command \(u_z = \sum_{i=1}^{4}\tilde{u}_i\) and
+      measured by a downward-facing sonar. Because the four motors act together, the vertical
+      channel reduces to a single-input problem.
+    </p>
+    <figure class="fig">
+      <img src="pictures/projects/quadrotor/quad-altitude.png" alt="Altitude step response to a 1 metre reference." width="900" height="728">
+      <figcaption>Time response to a 1 m altitude step.</figcaption>
+    </figure>
+
+    <h2>Attitude loop and robustness</h2>
+    <p>
+      Roll and pitch are stabilised from IMU measurements alone, using the differential
+      command \(u_\varphi = \tilde{u}_2 - \tilde{u}_4\). Roll and pitch are symmetric, so
+      designing one gives the other.
+    </p>
+    <p>
+      The interesting part is that the controller is not designed against nominal parameters.
+      An uncertain model is built in MATLAB's Robust Control Toolbox with <strong>&plusmn;3&sigma;
+      ranges on every parameter treated as deterministic bounds</strong>, and the controller is
+      synthesised with <code>hinfstruct</code> against two weighting functions &mdash; one for
+      performance, one for robust stability. The stronger <em>robust performance</em> criterion
+      is then checked on top.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/quadrotor/quad-robust.png" alt="Weighting functions plotted against frequency, showing performance and robust stability requirements satisfied." width="900" height="350">
+      <figcaption>Weighting functions for performance and robust stability, and the closed loop meeting them.</figcaption>
+    </figure>
+
+    <p>
+      Robustness is then verified statistically rather than only at the bounds: Monte Carlo
+      simulation over the uncertain parameters gives distributions of gain and phase margin,
+      settling time and overshoot. A <strong>state observer</strong> reconstructs the states
+      the IMU does not measure directly.
+    </p>
+
+    <h2>Putting it together</h2>
+    <figure class="fig">
+      <img src="pictures/projects/quadrotor/quad-strategy.png" alt="Block diagram of the full control strategy combining altitude, attitude and yaw channels into motor commands." width="900" height="513">
+      <figcaption>The full control strategy, from reference inputs down to the four motor commands.</figcaption>
+    </figure>
+
+    <p>The four channel commands map to the four motors through a fixed allocation matrix:</p>
+    \[ \mathbf{P}\begin{pmatrix}\tilde{u}_1\\ \tilde{u}_2\\ \tilde{u}_3\\ \tilde{u}_4\end{pmatrix} = \begin{pmatrix}U_\theta\\ U_\varphi\\ U_z\\ U_\psi\end{pmatrix}, \qquad \mathbf{P} = \begin{pmatrix} 1 & 0 & -1 & 0\\ 0 & -1 & 0 & 1\\ 1 & 1 & 1 & 1\\ 1 & -1 & 1 & -1 \end{pmatrix} \]
+    <p>
+      Above this, a higher-level loop takes user-specified coordinates \(x_{ref}, y_{ref}\) in
+      \(R_0\) and rotates them into the body frame through the yaw rotation, so horizontal
+      position commands become attitude references.
+    </p>
+
+    <p class="note">
+      The robust-synthesis and Monte Carlo approach here is the same one behind the
+      <a href="project-halo-orbits.html">stability analysis</a> habits that later show up in
+      my <a href="phd-research.html">PhD work</a> &mdash; design against the uncertainty set,
+      then check the distribution rather than a single nominal case.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automated Parallel Parking — Valentin Gaucher</title>
+<meta name="description" content="Course project: defining and validating the conditions, geometry and steering model for automated parallel parking, tested on a radio-controlled car.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="phd-research.html">PhD Research</a></li>
+      <li><a href="other-projects.html" aria-current="page">Other Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="other-projects.html">&larr; Other Projects</a></p>
+
+    <p class="course-badge">Course project &middot; ENSTA</p>
+    <h1>Automated parallel parking with a radio-controlled car</h1>
+    <p class="project-meta">
+      Working out when a parking space is feasible, what trajectory to follow, and whether the
+      steering can actually track it.
+    </p>
+
+    <h2>Why a scale model</h2>
+    <p>
+      Production parking assistants control the steering while the driver handles throttle and
+      speed, which is held roughly constant through the manoeuvre. Studying the real thing is
+      difficult: manufacturers' data on the steering components is confidential. A
+      radio-controlled car removes that obstacle &mdash; every component can be identified and
+      characterised directly, and tests run on real hardware rather than in simulation only.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/parking/parking-car.jpg" alt="The radio-controlled car used for the experiments, with key parameters marked." width="900" height="313">
+      <figcaption>The RC vehicle, with the geometric parameters used by the algorithm marked.</figcaption>
+    </figure>
+
+    <h2>Detecting a viable space</h2>
+    <p>
+      While the car drives past a gap, ultrasonic proximity sensors have to answer two
+      questions at once: is this space compatible with the manoeuvre at all, and where are the
+      geometric references the trajectory will be built from? Not every sensor feeds the
+      algorithm &mdash; some are reserved for safety, which is a distinction worth making
+      explicitly rather than treating all sensor data as equivalent.
+    </p>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/parking/parking-sensors.png" alt="Diagram of the vehicle showing the four ultrasonic sensors and their detection zones." width="900" height="363">
+      <img src="pictures/projects/parking/parking-manoeuvre.png" alt="Geometry of the parallel insertion manoeuvre into a parking space." width="900" height="398">
+      <figcaption>Ultrasonic detection layout, and the geometry of the parallel insertion manoeuvre.</figcaption>
+    </figure>
+
+    <h2>Can the steering follow it?</h2>
+    <p>
+      Planning the trajectory is only half the problem: the steering has to be able to track
+      it. The specification is concrete &mdash; zero steady-state error on a step, and a 5%
+      response time of \(t_{r5\%} \leq 0.4\) s.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/parking/parking-block.png" alt="Block diagram of the position control loop for the steering wheels." width="900" height="110">
+      <figcaption>Position control loop for the steering.</figcaption>
+    </figure>
+
+    <p>
+      No datasheet was available for the DC motor or the servo, so the parameters had to be
+      identified experimentally. A series of open-loop step tests recovers the resistance
+      \(R\), inductance \(L\) and inertia \(J_m\) from the potentiometer voltage response:
+    </p>
+    \[ u_{\text{mes}}(t) = K_m K_c K_r u_0 (t - \tau_m) + K_m K_c K_r \tau_m u_0 e^{-\frac{t}{\tau_m}} \]
+    <p>which gives the first-order motor transfer function</p>
+    \[ H_m(p) = \frac{K_m}{1 + \tau_m p}, \qquad K_m = \frac{1}{k_e}, \qquad \tau_m = \frac{R J_m}{k_e^2} \]
+
+    <figure class="fig">
+      <img src="pictures/projects/parking/parking-step.png" alt="Measured potentiometer voltage response to a 3 volt open-loop step input." width="900" height="612">
+      <figcaption>Potentiometer voltage for a 3 V open-loop step &mdash; the measurement the motor parameters are identified from.</figcaption>
+    </figure>
+
+    <p class="note">
+      Scope: the report covers the detection conditions, the trajectory geometry and the
+      identification and validation of the steering model. The planned final section on
+      improving the steering performance was never written up, so there are no closed-loop
+      correction results to report here.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
