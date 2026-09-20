@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dual Quaternion Collision Recovery — Valentin Gaucher</title>
+<meta name="description" content="A closed-form hybrid reset map on the dual quaternion manifold for UAV collision recovery, with proven hybrid Lyapunov stability and a 25% FLOP reduction.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+
+<!-- KaTeX renders the equations below. It is the only external dependency on
+     the site; without it the raw LaTeX is still legible. -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="projects.html" aria-current="page">Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="media.html">Talks &amp; Media</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="projects.html">&larr; Projects</a></p>
+
+    <h1>Dual quaternion collision recovery for quadrotors</h1>
+    <p class="project-meta">
+      With Wenlong Zhang &middot; IEEE Control Systems Letters (L-CSS), vol. 10, pp. 931&ndash;936, 2026.
+      Also presented at CDC 2026.
+    </p>
+    <div class="pub-links">
+      <a href="pdfs/cdc_lcss26_dual_quaternion_collision.pdf" target="_blank" rel="noopener">PDF</a>
+      <a href="https://doi.org/10.1109/LCSYS.2026.3704542">DOI</a>
+      <a href="pdfs/gaucher2026-lcss.bib">BibTeX</a>
+      <a href="publications.html#lcss-dq">Citation</a>
+    </div>
+
+    <figure class="fig fig-wide">
+      <img src="pictures/projects/lcss-hero.png" alt="UAV trajectories after wall impact in MuJoCo: the dual quaternion controller in blue recovers close to the wall, the matrix-based baseline in green loops away and drifts." width="1200" height="675">
+      <figcaption>
+        Collision recovery in MuJoCo. The dual quaternion framework (blue) damps the
+        post-impact linear and angular oscillation; the traditional matrix-based
+        approach (green) drifts away from the contact point.
+      </figcaption>
+    </figure>
+
+    <h2>The problem</h2>
+    <p>
+      UAVs operating in cluttered spaces have to survive contact &mdash; either to stabilise
+      after an unplanned hit, or deliberately, for tactile exploration. A collision is a
+      <em>hybrid</em> event: the vehicle flows continuously on \(SE(3)\) during free flight,
+      then its velocity jumps instantaneously at impact. How faithfully that jump is modelled
+      determines whether the recovery controller is stable.
+    </p>
+    <p>
+      The standard approach splits the configuration into a rotation matrix
+      \(\mathbf{R}\in SO(3)\) and a translation \(\mathbf{p}\in\mathbb{R}^3\), then resolves
+      the impact in those decoupled coordinates. The normal impulse magnitude comes from
+      the contact normal alone and friction is applied separately afterwards, so the
+      <strong>coupling between normal and tangential components never enters the impulse
+      magnitude</strong>. Resolving both together under Coulomb friction otherwise requires
+      iterative numerical schemes.
+    </p>
+
+    <h2>Related work, in one paragraph</h2>
+    <p>
+      Impulse-based collision resolution underpins modern quadrotor recovery, including
+      Muller's high-speed recovery controller, which estimates post-impact states from the
+      classical matrix formulation. Impacts are also modelled by solving linear
+      complementarity problems in the inertial frame &mdash; the approach MuJoCo's contact
+      solver takes. Separately, dual quaternions have long been a unified algebraic
+      alternative for rigid-body motion: introduced by Clifford, they map \(SE(3)\) to the
+      unit dual quaternion manifold and express rotation and translation as a
+      <em>single screw displacement</em>. They have been applied to trajectory tracking and
+      shown to be more computationally efficient and numerically stable than matrix
+      formulations &mdash; but never, before this work, to the hybrid modelling of UAV
+      collisions or to recovery control.
+    </p>
+
+    <h2>Preliminaries</h2>
+    <p>
+      Dual quaternions use dual numbers \(\hat{\mathbf{a}} = \mathbf{a} + \varepsilon\mathbf{b}\),
+      where \(\varepsilon\) is nilpotent (\(\varepsilon^2 = 0,\ \varepsilon \neq 0\)). The
+      primary part carries rotation, the dual part translation. The standard quadrotor
+      dynamics this work starts from are
+    </p>
+    \[ \dot{\mathbf{p}}^W = \mathbf{v}^W, \qquad \dot{\mathbf{q}} = \tfrac{1}{2}\mathbf{q}\otimes\boldsymbol{\omega}^B \]
+    \[ \dot{\mathbf{v}}^W = g\mathbf{e}_z^W - \tfrac{f}{m}\mathbf{q}\odot\mathbf{e}_z^B, \qquad \mathbf{J}\dot{\boldsymbol{\omega}}^B = \boldsymbol{\tau}^B - \boldsymbol{\omega}^B\times(\mathbf{J}\boldsymbol{\omega}^B) \]
+    <p>
+      For comparison, the classical matrix reset map computes the impulse from an
+      <em>effective mass</em> \(\rho\), which mixes the translational mass with the
+      rotational moment-arm contribution:
+    </p>
+    \[ \boldsymbol{\lambda}^W = -\frac{(1+e)\,(\mathbf{v}_c^{W-})^\top\mathbf{n}^W}{\rho}\left(\mathbf{n}^W + \mu\,\mathbf{t}^W\right), \qquad \rho = m^{-1} + (\mathbf{r}_c^B\times\mathbf{n}^B)^\top\mathbf{J}^{-1}(\mathbf{r}_c^B\times\mathbf{n}^B) \]
+    <p class="note">
+      Note the structure: the normal direction \(\mathbf{n}^W\) sets the magnitude, and
+      friction \(\mu\,\mathbf{t}^W\) is bolted on afterwards. That separation is the
+      approximation this work removes.
+    </p>
+
+    <h2>The dual quaternion reset map</h2>
+    <p>
+      Rather than mapping out of the configuration space to \(SO(3)\) matrices to resolve
+      the collision, the impact is evaluated <em>inside</em> the dual algebra, which
+      preserves the \(SE(3)\) geometry across the discrete jump. Under a rigid impact over
+      an infinitesimal interval, the jump in dual momentum equals the impulsive dual wrench,
+      giving the reset map on the twist \(\hat{\boldsymbol{\xi}}\):
+    </p>
+    \[ \hat{\mathcal{R}}:\ \hat{\boldsymbol{\xi}}^{+} = \hat{\boldsymbol{\xi}}^{-} + \mathcal{M}^{-1}(\hat{\mathcal{W}}) \]
+    <p>
+      The contact geometry is encoded as two orthogonal unit screws in Plücker line
+      coordinates &mdash; a normal screw (penetration) and a tangential screw (slip):
+    </p>
+    \[ \hat{\mathbf{s}}_n = (\mathbf{r}_c^B\times\mathbf{n}^B) + \varepsilon\mathbf{n}^B, \qquad \hat{\mathbf{s}}_t = (\mathbf{r}_c^B\times\mathbf{t}^B) + \varepsilon\mathbf{t}^B \]
+    <p>
+      Because these are Plücker lines, scaling them by scalar impulses generates both the
+      3D contact forces <em>and</em> the torques they induce about the centre of mass &mdash;
+      no explicit moment-arm computation needed. With Coulomb friction the total wrench is
+      \(\hat{\mathcal{W}} = \Lambda(\hat{\mathbf{s}}_n + \mu\hat{\mathbf{s}}_t)\).
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/lcss-reset.png" alt="Diagram of the dual quaternion reset map on the impact manifold, showing the pre- and post-impact configurations and the dual wrench applied at the contact point." width="1000" height="472">
+      <figcaption>The reset map acting on the impact manifold. The inset shows the dual wrench \(\hat{\mathcal{W}} = \Lambda(\hat{\mathbf{s}}_n + \mu\hat{\mathbf{s}}_t)\) applied at the contact point.</figcaption>
+    </figure>
+
+    <h3>The central result</h3>
+    <p>
+      Applying Newton's restitution law by projecting the reset onto the normal screw gives
+      a closed form for the impulse magnitude:
+    </p>
+    \[ \Lambda = \frac{-(1+e)\,\langle\hat{\boldsymbol{\xi}}^{-},\hat{\mathbf{s}}_n\rangle}{\ \mu\,\langle\mathcal{M}^{-1}(\hat{\mathbf{s}}_t),\hat{\mathbf{s}}_n\rangle + \langle\mathcal{M}^{-1}(\hat{\mathbf{s}}_n),\hat{\mathbf{s}}_n\rangle\ } \]
+    <p>
+      The first term in the denominator is the cross-coupling that decoupled formulations
+      discard. Everything is one algebraic operation on the manifold &mdash; no matrix
+      exponentials, no intermediate coordinate transforms.
+    </p>
+    <p class="callout">
+      <strong>Proposition 1.</strong> Setting the cross-coupling term
+      \(\mu\langle\mathcal{M}^{-1}(\hat{\mathbf{s}}_t),\hat{\mathbf{s}}_n\rangle \approx 0\)
+      recovers the classical matrix reset map exactly &mdash; the effective inertia reduces to
+      \(\rho_{DQ} \equiv \rho\). The classical model is a special case, not a different model.
+    </p>
+
+    <h2>Recovery control and stability</h2>
+    <p>
+      To avoid actuator saturation, recovery uses an admittance strategy built directly on
+      the manifold. The post-impact twist is scaled by a dual admittance gain to give a
+      braking displacement in the Lie algebra, \(\hat{\boldsymbol{\delta}} = \hat{\mathbf{\Gamma}}\circ\hat{\boldsymbol{\xi}}^{+}\),
+      which is mapped back to the configuration manifold through the dual exponential
+      \(\hat{\mathbf{q}}_\Delta = \exp(\tfrac{1}{2}\hat{\boldsymbol{\delta}})\). Shifting the
+      reference setpoint introduces virtual compliance, letting the vehicle yield to the
+      collision. One screw displacement replaces the two independent shifts on
+      \(\mathbb{R}^3\times SO(3)\) a non-dual implementation needs.
+    </p>
+    <p class="callout">
+      <strong>Proposition 2.</strong> The closed-loop hybrid system is Lyapunov stable at
+      \(\mathcal{A} = \{x \mid \hat{\mathbf{q}}_e = \hat{\mathbf{1}},\ \hat{\boldsymbol{\xi}} = \hat{\mathbf{0}}\}\),
+      using the candidate
+      \(V = 2k_q(1-q_e^w) + \tfrac{1}{2}k_p\|\mathbf{p}_e\|^2 + \tfrac{1}{2}\|\hat{\boldsymbol{\xi}}\|^2_{\mathcal{M}}\).
+      Since \(e\in[0,1)\) guarantees bounded energy dissipation per impact, Zeno executions
+      are excluded.
+    </p>
+
+    <h2>Results</h2>
+
+    <h3>Computational cost</h3>
+    <p>
+      Counting floating-point operations for the reset map: the matrix formulation needs
+      \(C(\text{MF}) = 69\), a position-plus-quaternion formulation \(C(\text{PQ}) \approx 65\),
+      and the dual quaternion formulation \(C(\text{DQ}) = 52\) &mdash; a <strong>25% FLOP
+      reduction</strong> over the matrix baseline. C++ benchmarks on a Raspberry Pi 5
+      confirmed a <strong>24% execution-time reduction</strong>. Operating on 8-element dual
+      quaternion arrays rather than 12-element matrix–vector pairs also improves cache
+      coherency, which matters for RTOS stability on shared flight hardware.
+    </p>
+
+    <h3>Closed-loop simulation</h3>
+    <figure class="fig">
+      <img src="pictures/projects/lcss-states.png" alt="State trajectories after a single impact comparing the published baseline, a strong baseline and the dual quaternion controller." width="1000" height="486">
+      <figcaption>Single impact at roughly 2 m/s, friction \(\mu = 0.3\). The published baseline loses lateral authority and suffers attitude oscillation.</figcaption>
+    </figure>
+    <p>
+      MuJoCo's soft-constraint LCP solver deliberately breaks the decoupled assumption by
+      generating cross-coupled impact torques, so the simulation tests the controller against
+      exactly the physics the model is meant to capture. Monte Carlo runs (\(N = 50\)) swept
+      impact angle and friction coefficient.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/lcss-mc-pos.png" alt="Monte Carlo results sweeping the drone's initial y-position." width="900" height="397">
+      <img src="pictures/projects/lcss-mc-friction.png" alt="Monte Carlo results sweeping the friction coefficient." width="900" height="356">
+      <figcaption>Monte Carlo over impact angle (top) and friction coefficient \(\mu\in[0.1,0.5]\) (bottom).</figcaption>
+    </figure>
+
+    <table class="data-table">
+      <caption>Improvement of the dual quaternion controller over two baselines (\(N = 50\)).</caption>
+      <thead>
+        <tr><th>Sweep</th><th>Metric</th><th>vs published</th><th>vs strong baseline</th></tr>
+      </thead>
+      <tbody>
+        <tr><td rowspan="2">Angle</td><td>\(L_2\) RMSE (m)</td><td>50.8%</td><td>12.4%</td></tr>
+        <tr><td>\(E_k\) RMSE (J)</td><td>68.7%</td><td>4.0%</td></tr>
+        <tr><td rowspan="2">Friction</td><td>\(L_2\) RMSE (m)</td><td>75.1%</td><td>24.7%</td></tr>
+        <tr><td>\(E_k\) RMSE (J)</td><td>85.0%</td><td>12.7%</td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      The most informative row is the comparison against the <em>strong</em> baseline &mdash;
+      a 6-DOF admittance shift with the classical decoupled reset, which no published UAV
+      recovery method actually uses. Beating the published baselines largely reflects adding
+      angular admittance. Beating the strong baseline isolates the cross-coupling correction
+      as the source of the remaining gain. A deliberately decoupled dual quaternion variant
+      lands exactly on the strong baseline, which is an empirical check on Proposition 1.
+    </p>
+
+    <h2>What this gives you</h2>
+    <ul>
+      <li>A closed-form impact law that keeps normal–tangential coupling in a single operation, with no iterative solver.</li>
+      <li>A recovery controller with proven hybrid Lyapunov stability that drops into standard cascaded UAV architectures.</li>
+      <li>Cheaper to run than what it replaces &mdash; 25% fewer FLOPs, 24% lower measured latency on embedded hardware.</li>
+    </ul>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

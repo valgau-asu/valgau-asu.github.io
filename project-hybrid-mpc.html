@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Switch-Time-Aware Hybrid MPC — Valentin Gaucher</title>
+<meta name="description" content="HMP-MPC: lifting the switching instant into the decision vector so a real-time SQP solver can optimise impact timing, with KKT conditions consistent with the Hybrid Minimum Principle.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="projects.html" aria-current="page">Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="media.html">Talks &amp; Media</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="projects.html">&larr; Projects</a></p>
+
+    <h1>Switch-time-aware hybrid model predictive control</h1>
+    <p class="project-meta">
+      With Wenlong Zhang &middot; IEEE Conference on Decision and Control (CDC), 2026 &mdash;
+      accepted, to appear.
+    </p>
+    <div class="pub-links">
+      <a href="pdfs/cdc26_time_aware_hybrid_mpc.pdf" target="_blank" rel="noopener">PDF</a>
+      <a href="publications.html#cdc-hmp">Citation</a>
+    </div>
+
+    <figure class="fig fig-wide">
+      <img src="pictures/projects/cdc-lifted.png" alt="Diagram contrasting a fixed-grid reset, which lands off the guard surface, with the lifted formulation that slides the switching instant within the step to meet the optimal trajectory." width="1200" height="686">
+      <figcaption>
+        The core idea. A fixed grid can only place the reset at a node, leaving an
+        \(\mathcal{O}(h_k)\) gap from the true crossing. Lifting \(\theta_k\) lets the
+        optimiser slide the switching instant inside the step.
+      </figcaption>
+    </figure>
+
+    <h2>The problem</h2>
+    <p>
+      In hybrid systems with state-dependent instantaneous resets &mdash; a bouncing mass, a
+      legged robot's footfall, a drone striking a surface &mdash; the event time is a decision
+      variable coupled to the continuous states and inputs. Standard fixed-step MPC treats
+      the impact instant as a passive consequence of the forward rollout. Its Jacobians
+      neglect how sensitive the trajectory is to the exact switching time, so mode-switching
+      decisions come out suboptimal.
+    </p>
+    <p>
+      Rigorous alternatives exist but are expensive. Mixed-integer QP uses binaries to
+      optimise timings; mathematical programs with complementarity constraints optimise
+      across transitions; moving finite-element meshes align the switching surface precisely.
+      All rely on combinatorial search or large-scale formulations that are prohibitive at
+      control rates. The gap: <strong>timing precision comparable to MPCC, at the speed of a
+      fixed-step SQP solver</strong>.
+    </p>
+
+    <h2>Related work, in one paragraph</h2>
+    <p>
+      Optimality conditions for hybrid systems are well established. Sussmann and Caines
+      extended the Pontryagin Maximum Principle to hybrid systems, deriving conditions on
+      both continuous controls and discrete switching times; Dmitruk and Kaganovich unified
+      these as the <em>Hybrid Minimum Principle</em> (HMP). The HMP is traditionally a
+      continuous-time, open-loop theory, and enforcing it inside a discrete-time receding
+      horizon is the open problem. On the numerical side, Ross and Fahroo showed that for
+      smooth systems, KKT multipliers converge to Pontryagin costates. To differentiate
+      through a discrete transition one uses the <em>saltation matrix</em>, formalised by
+      Aizerman and recently shown by Kong et al. to be practical for robotics &mdash; but those
+      implementations still treat the switching time as an outcome, not a decision.
+    </p>
+
+    <h2>Preliminaries</h2>
+    <p>
+      Trajectories live on a hybrid time domain indexed by flow time \(t\) and jump counter
+      \(j\). Flows follow \(\dot{x} = f_q(x,u)\); when the trajectory hits the guard
+      \(G := \{x \mid g(x,t) = 0\}\) the state jumps via the reset \(x^+ = R(x^-,t_j)\).
+      A transversality assumption keeps the crossing strict rather than grazing:
+    </p>
+    \[ \nabla_x g(x^-,t_j)^\top f_q(x^-,u^-) + \nabla_t g(x^-,t_j) \neq 0 \]
+    <p>
+      The HMP gives the necessary conditions. With Hamiltonian
+      \(H_q(x,u,\lambda) := L_q(x,u) + \lambda^\top f_q(x,u)\) and a multiplier \(\kappa_j\)
+      on the active guard, the costate jumps and the Hamiltonian satisfies an
+      <em>event-time stationarity</em> condition:
+    </p>
+    \[ \lambda^- = \nabla_x R^\top \lambda^+ + \kappa_j\nabla_x g + \nabla_x L_D \]
+    \[ H_q^- = H_r^+ - \nabla_t L_D - \kappa_j\nabla_t g - (\lambda^+)^\top\nabla_t R \]
+    <p>
+      The first-order sensitivity across the jump is captured by the saltation matrix, which
+      maps \(\delta x^+ = \Xi\,\delta x^-\):
+    </p>
+    \[ \Xi = \nabla_x R + \frac{\left(f_r^+ - \nabla_x R\,f_q^- - \nabla_t R\right)\nabla_x g^\top}{\nabla_x g^\top f_q^- + \nabla_t g} \]
+
+    <h2>The approach: lift the switching time</h2>
+    <p>
+      The horizon is partitioned into a grid with uniform steps \(h_k\), at most one
+      transition per interval. The switching instant is parameterised by an
+      <strong>intra-step fraction</strong> \(\theta_k \in (0,1)\), giving
+      \(\tau_k := t_k + \theta_k h_k\). The pre-event arc flows exactly to the guard surface,
+      the state resets, and the post-event arc carries on to the next node:
+    </p>
+    \[ x_k^- = x_k + h_k\theta_k\,f_{q_k}(x_k, u_k^-), \qquad x_{k+1} = x_k^+ + h_k(1-\theta_k)\,f_{r_k}(x_k^+, u_k^+) \]
+    <p>
+      Lifting \(\theta_k\) into the decision vector is a redundant but
+      optimisation-enabling parametrisation. It decouples event timing from state
+      propagation, so the optimiser adjusts timing <em>without implicitly differentiating
+      through the guard</em> &mdash; the guard constraint enforces consistency separately. The
+      nonsmooth dependence on event timing becomes a smooth NLP with algebraic constraints,
+      which an ordinary gradient-based solver can handle.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/cdc-grid.png" alt="State-space representation of the event-localized discretization, showing the pre-event arc, the reset, and the post-event arc within a single time step." width="1000" height="293">
+      <figcaption>Event-localised discretisation: the pre-event arc, the reset, and the post-event arc all inside one step of length \(h_k\).</figcaption>
+    </figure>
+
+    <p class="callout">
+      <strong>Theorem 1.</strong> Any KKT point of the lifted problem satisfies
+      \[ \lambda_k^- = \nabla_x R^\top\lambda_k^+ + \kappa_k\nabla_x g + \nabla_x L_D \]
+      \[ H_q^- = H_r^+ - \nabla_t L_D - \kappa_k\nabla_t g - (\lambda_k^+)^\top\nabla_t R + \mathcal{O}(h_k) \]
+      &mdash; a first-order consistent discretisation of the HMP conditions. The optimiser
+      never evaluates a saltation matrix; the hybrid sensitivities fall out of the KKT system.
+    </p>
+    <p>
+      <strong>Corollary 1</strong> closes the loop with existing practice: eliminating
+      \(\kappa_k\) from the KKT system reproduces the saltation-matrix costate update,
+      \(\lambda_k^- = \Xi_k^\top\lambda_k^+ + \nabla_x L_D - \frac{D_t L_D}{D_t g}\nabla_x g + \mathcal{O}(h_k)\).
+      Crucially, the \(\mathcal{O}(N)\) sparse block-tridiagonal structure survives, so the
+      problem stays a convex QP that a first-order sparse solver can take.
+    </p>
+
+    <h2>Results</h2>
+    <p>
+      The benchmark is a 3D controlled bouncing mass landing on a platform moving as
+      \(z_p(t) = \sin(2t)\), with restitution \(e = 0.75\) and tangential friction
+      \(\mu_t = 0.2\). All controllers use \(h = 0.05\) s and \(N = 20\). The mass counts as
+      <em>attached</em> once it stays within 1 cm of the surface for 0.3 s.
+    </p>
+
+    <figure class="fig fig-wide">
+      <img src="pictures/projects/cdc-performance.png" alt="Height tracking and contact error over time for four controllers: saltation MPC, TA MPCC, contact MIQP, and HMP-MPC." width="1200" height="745">
+      <figcaption>Closed-loop landing on the moving platform. The fixed-grid saltation MPC keeps rebounding; HMP-MPC settles.</figcaption>
+    </figure>
+
+    <table class="data-table">
+      <caption>Performance and per-cycle cost (\(N = 20\), \(h = 0.05\) s). The MIQP is capped at 30 s per solve.</caption>
+      <thead>
+        <tr><th>Method (solver)</th><th>Attach (s)</th><th>Impacts</th><th>Cum. effort</th><th>Solve (ms)</th><th>Rel. cost</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Saltation MPC (OSQP)</td><td>6.35</td><td>6</td><td>15.2</td><td>2.11</td><td>0.9&times;</td></tr>
+        <tr class="row-ours"><td><strong>HMP-MPC (OSQP)</strong></td><td>3.20</td><td>4</td><td>10.7</td><td>2.43</td><td>1.0&times;</td></tr>
+        <tr><td>HMP-MPC (IPOPT)</td><td>3.25</td><td>4</td><td>11.4</td><td>26.6</td><td>11&times;</td></tr>
+        <tr><td>Time-aware MPCC (IPOPT)</td><td>2.10</td><td>2</td><td>10.3</td><td>281</td><td>116&times;</td></tr>
+        <tr><td>Contact MIQP (Bonmin)</td><td>2.05</td><td>5</td><td>10.6</td><td>22 800</td><td>9383&times;</td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      The fixed-grid baseline cannot place the reset inside a step, so it mistimes the impact:
+      its one-step prediction error across an impact-containing interval averages
+      <strong>7.9 cm, against 0.7 cm</strong> for the lifted transcription. Because that error
+      exceeds the attachment band itself, the baseline overshoots and rebounds &mdash; 6 impacts
+      and 6.35 s to attach, against 4 impacts and 3.20 s.
+    </p>
+    <p>
+      The offline-quality formulations attach soonest, as you would expect from methods
+      solving the nonlinear or combinatorial problem to near-optimality. The point is what
+      that costs. Comparing the two IPOPT rows isolates the <em>transcription</em>: the lifted
+      formulation is 10.6&times; cheaper than the complementarity expansion at the same solver.
+      Comparing the two HMP-MPC rows isolates the <em>solver</em>: a further 10.9&times;, available
+      only because the lifted transcription stays a convex QP. Together, a <strong>116&times;
+      end-to-end speedup</strong> over time-aware MPCC, and roughly 9400&times; over the MIQP &mdash;
+      which at 22.8 s per cycle is three orders of magnitude beyond the sampling period.
+    </p>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/cdc-computation.png" alt="Per-cycle solve time against horizon length N." width="800" height="532">
+      <img src="pictures/projects/cdc-cost.png" alt="Cumulative control effort for the four methods." width="800" height="529">
+      <figcaption>Per-cycle solve time against horizon length (left) and cumulative control effort (right).</figcaption>
+    </figure>
+
+    <h3>Is the theory actually holding?</h3>
+    <figure class="fig">
+      <img src="pictures/projects/cdc-residual.png" alt="Stationarity residual plotted against step size h on log axes, decaying with slope 1.21, while the QP residual stays flat at solver tolerance." width="900" height="383">
+      <figcaption>Stationarity residual against step size \(h\). The QP residual stays at solver tolerance throughout.</figcaption>
+    </figure>
+    <p>
+      Theorem 1 bounds the gap to the continuous-time HMP by \(\mathcal{O}(h_k)\), and at
+      \(h = 0.05\) s that remainder does not vanish. Sweeping \(h \in [10^{-2},10^{-1}]\), the
+      residual decays with an empirical slope of <strong>1.21</strong>, consistent with the
+      first-order bound &mdash; while the QP stationarity residual stays flat at solver
+      tolerance, confirming the decay is discretisation error rather than solver accuracy.
+      That gives a direct criterion for choosing \(h\): shrink it until the residual falls
+      below what the task demands, subject to solve time growing linearly in \(N\).
+    </p>
+
+    <h3>Robustness to contact model error</h3>
+    <p>
+      Sweeping the plant's true restitution over \([0, 0.95]\) with 40 randomised initial
+      conditions per value, run once with each controller given the true value and once
+      holding the nominal \(e_{\text{MPC}} = 0.75\). Given exact physics, the fixed-grid
+      baseline still misses roughly a third of its landings at \(e_{\text{true}} \ge 0.85\),
+      while HMP-MPC captures 98&ndash;100%. What fails on a bouncy surface is
+      <em>timing, not modelling</em>: a larger \(e\) amplifies any error in the predicted
+      impact instant. Under model mismatch, HMP-MPC stays within the confidence interval
+      everywhere while the baseline loses 26 points at \(e = 0.95\) &mdash; because minimising
+      over \(\theta_k\) brings the mass to contact at near-zero relative velocity, and since
+      \(v^+ = -e\,v^-\), model error enters only in proportion to \(v^-\). Arriving slowly
+      attenuates the error rather than leaving the controller to reject it afterwards.
+    </p>
+
+    <h2>What this gives you</h2>
+    <ul>
+      <li>Impact timing as a first-class decision variable, at fixed-step SQP cost.</li>
+      <li>KKT conditions provably consistent with the Hybrid Minimum Principle to first order &mdash; no saltation matrices evaluated at runtime.</li>
+      <li>30% less cumulative control effort than the only other real-time-capable method, for a 15% increase in solve time.</li>
+    </ul>
+
+    <p class="note">
+      Current limits: validation covers a single impact per horizon on a low-dimensional
+      benchmark. Extending to multi-contact and higher-dimensional regimes, handling unknown
+      restitution, and hardware validation are ongoing.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

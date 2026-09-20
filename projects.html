@@ -31,53 +31,43 @@
 
     <div class="page-intro">
       <h1>Projects</h1>
-      <p>Research projects, tools and side work. Most have code or a demo attached.</p>
+      <p>Selected research projects. Each page summarises the problem, the core result and the numbers behind it.</p>
     </div>
 
     <div class="card-grid">
 
-      <!-- ===== COPY THIS BLOCK for each new project ===================== -->
       <article class="card">
-        <img class="card-thumb" src="pictures/project-1.svg" alt="">
+        <img class="card-thumb" src="pictures/projects/thumb-dq.png" alt="UAV trajectories after a wall impact in simulation">
         <div class="card-body">
-          <h3><a href="https://github.com/valgau-asu/repo">Project title</a></h3>
+          <h3><a href="project-dual-quaternion.html">Dual quaternion collision recovery</a></h3>
           <p>
-            Two or three sentences. What problem it solves, what you built,
-            and the result that makes it worth reading about.
+            A closed-form hybrid reset map on the dual quaternion manifold that keeps
+            normal&ndash;tangential impulse coupling in a single algebraic operation. Proven
+            hybrid Lyapunov stability, 25% fewer FLOPs than the matrix formulation.
           </p>
           <ul class="tags">
-            <li>Python</li>
-            <li>Simulation</li>
-          </ul>
-        </div>
-      </article>
-      <!-- ================================================================ -->
-
-      <article class="card">
-        <img class="card-thumb" src="pictures/project-2.svg" alt="">
-        <div class="card-body">
-          <h3><a href="#">Second project</a></h3>
-          <p>
-            Replace this with a real project. If you have a figure or a screenshot,
-            it does more work than the text does.
-          </p>
-          <ul class="tags">
-            <li>Method</li>
-            <li>Dataset</li>
+            <li>Hybrid systems</li>
+            <li>SE(3)</li>
+            <li>MuJoCo</li>
+            <li>L-CSS 2026</li>
           </ul>
         </div>
       </article>
 
       <article class="card">
-        <img class="card-thumb" src="pictures/project-3.svg" alt="">
+        <img class="card-thumb" src="pictures/projects/thumb-mpc.png" alt="Diagram of lifted switching time against a fixed grid">
         <div class="card-body">
-          <h3><a href="#">Third project</a></h3>
+          <h3><a href="project-hybrid-mpc.html">Switch-time-aware hybrid MPC</a></h3>
           <p>
-            Three cards fill the grid nicely on a laptop. Delete any you don't need —
-            the layout reflows on its own.
+            Lifting the switching instant into the decision vector so a real-time SQP solver
+            can optimise impact timing. KKT conditions consistent with the Hybrid Minimum
+            Principle, and a 116&times; speedup over complementarity formulations.
           </p>
           <ul class="tags">
-            <li>Teaching</li>
+            <li>Optimal control</li>
+            <li>MPC</li>
+            <li>Hybrid Minimum Principle</li>
+            <li>CDC 2026</li>
           </ul>
         </div>
       </article>

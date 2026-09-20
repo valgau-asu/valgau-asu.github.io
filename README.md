@@ -8,12 +8,14 @@ Plain HTML/CSS/JS. No build step, no dependencies. Edit a file, refresh the brow
 index.html          About / landing page
 experience.html     Research and engineering positions
 projects.html       Project cards
+project-*.html      Long-form project write-ups (KaTeX for equations)
 publications.html   Publication list
 media.html          Talks, videos, slides
 css/style.css       All styling. Colors live in :root at the top.
 js/main.js          Mobile menu + footer year
 pictures/           Photo and project images
 pictures/logo/      Affiliation logos
+pictures/projects/  Figures for the project write-ups
 pdfs/               CV, papers, slides, BibTeX
 .nojekyll           Tells GitHub Pages to serve files as-is
 ```
@@ -37,7 +39,10 @@ them plainly. Pass a port if 8000 is busy: `python3 dev.py 3000`.
   `[square brackets]` or named `YOUR_USERNAME` / `VIDEO_ID` is a placeholder to replace.
 - **Adding a project or paper:** each page has a commented block marked
   `COPY THIS BLOCK` — duplicate it and fill it in.
-- **The nav bar** is copied into all five pages. If you add a page, add the link in
+- **Equations** on the project pages are written as LaTeX between `\\(...\\)` (inline)
+  or `\\[...\\]` (display) and rendered by KaTeX, loaded from a CDN on those two
+  pages only. It is the site's one external dependency.
+- **The nav bar** is copied into all five top-level pages. If you add a page, add the link in
   all five, and set `aria-current="page"` on the current page's own link.
 - **Colors and fonts:** the `:root` block at the top of `css/style.css`. Change
   `--accent` to restyle the whole site. Dark mode is handled automatically.
