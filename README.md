@@ -44,8 +44,8 @@ them plainly. Pass a port if 8000 is busy: `python3 dev.py 3000`.
 - **Equations** on the project pages are written as LaTeX between `\\(...\\)` (inline)
   or `\\[...\\]` (display) and rendered by KaTeX, loaded from a CDN on those two
   pages only. It is the site's one external dependency.
-- **The nav bar** is copied into all five top-level pages. If you add a page, add the link in
-  all five, and set `aria-current="page"` on the current page's own link.
+- **The nav bar** is copied into all four top-level pages. If you add a page, add the link in
+  all four, and set `aria-current="page"` on the current page's own link.
 - **Colors and fonts:** the `:root` block at the top of `css/style.css`. Change
   `--accent` to restyle the whole site. Dark mode is handled automatically.
 
