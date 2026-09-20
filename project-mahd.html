@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mid-Air Helicopter Deployment (MAHD) — Valentin Gaucher</title>
+<meta name="description" content="Experimental validation of the takeoff transition in NASA's Mid-Air Helicopter Deployment concept for Mars rotorcraft, using Earth-ambient sub-scale testing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="phd-research.html" aria-current="page">PhD Research</a></li>
+      <li><a href="other-projects.html">Other Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="phd-research.html">&larr; PhD Research</a></p>
+
+    <h1>Mid-Air Helicopter Deployment: validating the takeoff transition</h1>
+    <p class="project-meta">
+      NASA Jet Propulsion Laboratory / Caltech CAST &middot; manuscript in preparation.
+    </p>
+
+    <p class="callout">
+      <strong>This page covers the concept and motivation only.</strong> The experimental
+      results are part of a journal article still in preparation, so no measurements,
+      figures or findings from it appear here. What follows is the context: what MAHD is,
+      why the takeoff transition is the hard part, and why it has to be tested rather than
+      simulated.
+    </p>
+
+    <h2>The problem MAHD solves</h2>
+    <p>
+      Mars rotorcraft are getting bigger. Ingenuity proved powered flight on Mars is
+      possible; the proposals that follow it are far more capable &mdash; the
+      <a href="https://www.jpl.nasa.gov/images/pia26375-nasas-mars-chopper-concept-rendering/">Mars
+      Chopper concept</a> is about the size of an SUV, with six rotors of six blades each,
+      carrying 5 kg of science payload up to 3 km per sol.
+    </p>
+    <p>
+      That capability creates a delivery problem. Conventional surface-delivery
+      architectures &mdash; a sky crane, as used for Curiosity and Perseverance &mdash; impose
+      serious packaging, mass and performance penalties on a vehicle that large. The
+      alternative is a <strong>helicopter-only mission architecture</strong>, where the
+      rotorcraft performs its own terminal landing, transitioning from parachute-supported
+      descent to rotorborne flight before it reaches the surface.
+    </p>
+
+    <figure class="fig video-embed-wrap">
+      <div class="video-embed">
+        <iframe src="https://www.youtube-nocookie.com/embed/SG_yPBDv6IA"
+                title="NASA's Mars Chopper concept animation"
+                allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
+                allowfullscreen loading="lazy"></iframe>
+      </div>
+      <figcaption>NASA&rsquo;s Mars Chopper concept &mdash; the class of vehicle this delivery architecture is designed for.</figcaption>
+    </figure>
+
+    <p>
+      Doing that directly is hard. Going from high parachute descent rates to stable
+      rotorborne flight demands aggressive recovery manoeuvres and exposes the rotors to
+      unfavourable descent aerodynamics, including <strong>vortex ring state</strong>.
+      <strong>Mid-Air Helicopter Deployment</strong> avoids this: a lightweight jetpack
+      attached beneath the rotorcraft fires retro-rockets after backshell separation,
+      decelerating the vehicle into near-hover conditions inside the rotorcraft&rsquo;s own
+      flight envelope. Only then do the rotors spin up, the helicopter transitions to
+      rotorborne flight, and the jetpack &mdash; its job done &mdash; is jettisoned.
+    </p>
+    <p>
+      The payoff is that it preserves rotor size and payload capability while keeping the
+      vehicle out of the aerodynamic regimes that make direct transition dangerous.
+    </p>
+
+    <figure class="fig fig-wide">
+      <img src="pictures/projects/mahd/mahd-concept-sequence.png" alt="MAHD concept of operations across four phases: entry, parachute descent, jetpack-powered deceleration, and helicopter flight, annotated with altitudes, velocities and event times." width="1200" height="564">
+      <figcaption>
+        MAHD concept of operations &mdash; entry, parachute descent, jetpack deceleration and
+        trimming, rotor spin-up and separation, then powered landing. Altitudes and velocities
+        are for an Eridania Basin scenario. Figure from Delaune et al.,
+        <a href="https://ieeexplore.ieee.org/document/9843825"><em>Mid-Air Helicopter Delivery
+        at Mars Using a Jetpack</em></a>, IEEE Aerospace Conference, 2022.
+      </figcaption>
+    </figure>
+
+    <h2>The critical moment</h2>
+    <p>
+      The event this work targets is the handover: the moment the rotorcraft stops being
+      carried and starts flying. Just before release, the vehicle is producing positive net
+      thrust while still mechanically restrained to a jetpack platform that is providing
+      attitude control and station keeping. Several things act on it at once:
+    </p>
+    <ul>
+      <li><strong>Crosswind and gusts</strong> impose airloads on a restrained vehicle.</li>
+      <li><strong>Pulsed jetpack thrusters</strong> degrade rotor performance through ambient entrainment.</li>
+      <li><strong>Structural vibration</strong> travels through the interface into the avionics.</li>
+    </ul>
+    <p>
+      Together these leave residual forces and moments at the rotorcraft&ndash;jetpack
+      interface, biasing the vehicle state at the instant of separation. The consequences
+      show up immediately afterwards as attitude excursions, lateral drift, or the risk of
+      re-contact with the jetpack in the first instants of free flight.
+    </p>
+    <p>
+      That motivates an <strong>airload-aware takeoff</strong>: use force and torque
+      measurements taken <em>before</em> release to trim the rotorcraft to a prescribed
+      thrust-to-weight ratio and a near-zero moment condition, so it separates from a known,
+      balanced state rather than an arbitrary one.
+    </p>
+
+    <h2>Why it has to be tested</h2>
+    <p>
+      Aerodynamic interaction, sensing, control and vehicle dynamics are coupled here, which
+      makes the transition difficult to assess from static airload measurements or simulation
+      alone. Validation for planetary rotorcraft programmes has traditionally relied on
+      specialised facilities that reproduce selected environmental drivers &mdash; atmospheric
+      density, gravity loading, wind, rotor operating state. Those facilities are essential
+      for anchoring models, but they are costly, volume-limited, slow to iterate, and often
+      restricted to static or restrained configurations. Those constraints are precisely what
+      make them a poor fit for an integrated <em>transient</em> event like MAHD.
+    </p>
+    <figure class="fig fig-float">
+      <img src="pictures/projects/mahd/mahd-experiment.jpg" alt="Composite of overlaid snapshots showing the sub-scale rotorcraft trimming on the jetpack platform, releasing, and climbing away under wind and jetpack flow." width="900" height="682">
+      <figcaption>
+        The experiment as a composite of overlaid snapshots: trimming and release on the
+        jetpack platform, then the climb away under crosswind and jetpack flow.
+      </figcaption>
+    </figure>
+
+    <p>
+      This study takes the opposite approach: evaluate the coupled release dynamics in
+      <strong>Earth-ambient sub-scale testing</strong>, trading environmental fidelity for the
+      ability to run a full, dynamic, repeatable takeoff sequence. The testbed preserves the
+      quantities that matter most to release and early takeoff &mdash; a 20% powered rotorcraft
+      model, a nitrogen cold-gas jetpack analogue reproducing the jetpack&rsquo;s aerodynamic
+      effects and vibration, and a large open-circuit wind tunnel.
+    </p>
+
+    <p>
+      On top of that sits a fully autonomous, airload-aware takeoff pipeline: the restrained
+      rotorcraft spins up, trims thrust and moments against the measured loads, separates from
+      the jetpack platform, and transitions to stable hover &mdash; all under wind and jetpack
+      disturbance.
+    </p>
+
+    <h2>Background</h2>
+    <p>
+      The MAHD concept was developed at NASA JPL, where I worked on the experimental
+      characterisation of Mars Science Helicopter takeoff performance from a jetpack during my
+      master&rsquo;s thesis. The earlier risk-reduction campaign is summarised in
+      <a href="publications.html#mahd-poster">the MAHD SRTD poster</a>, and the position itself
+      on my <a href="experience.html#jpl-cast">experience page</a>.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -470,6 +470,24 @@ main { padding: 56px 0 80px; }
   line-height: 1.5;
 }
 
+/* A half-width figure that text flows around. Floats right on wide screens and
+   drops back to a normal full-width block on narrow ones, where wrapping round
+   a 46% image would leave unreadably short lines. */
+.fig-float {
+  float: right;
+  width: 46%;
+  margin: 4px 0 18px 30px;
+}
+.fig-float img { padding: 8px; }
+.fig-float figcaption { font-size: 0.84rem; }
+
+/* Headings must never sit alongside a floated figure. */
+.prose h2, .prose h3 { clear: both; }
+
+@media (max-width: 720px) {
+  .fig-float { float: none; width: 100%; margin: 2rem 0; }
+}
+
 /* A wide figure is allowed to break the reading measure. */
 .fig-wide { margin-left: -60px; margin-right: -60px; }
 
