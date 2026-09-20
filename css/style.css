@@ -191,22 +191,13 @@ main { padding: 56px 0 80px; }
 }
 
 /* Affiliation logos ------------------------------------------------------
-   Stacked under the photo: ASU, ISAE-SUPAERO, then NASA JPL.
-   Files live in pictures/logo/. ASU and ISAE are pure white art on a
-   transparent background; JPL is full colour on transparent. */
+   Stacked under the photo: ASU, then ISAE-SUPAERO, matched on width.
+   Both are pure white art on a transparent background. */
 
-.logo-asu {
-  width: 180px;                    /* same width as the photo */
-  height: auto;
-}
-
-/* Narrower than ASU and centred within the column, as requested. */
+.logo-asu,
 .logo-isae {
-  width: 120px;                    /* about two thirds of ASU's width */
+  width: 180px;                    /* same width as the photo, and as each other */
   height: auto;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* White art would be invisible on the light page, so both are knocked down to
@@ -224,8 +215,7 @@ main { padding: 56px 0 80px; }
   .hero { grid-template-columns: 1fr; gap: 24px; }
   .hero-photo { width: 140px; height: 140px; }
   .hero-aside { width: 140px; }
-  .logo-asu { width: 140px; }
-  .logo-isae { width: 93px; }
+  .logo-asu, .logo-isae { width: 140px; }
 }
 
 /* --------------------------------------------------------------- links -- */
