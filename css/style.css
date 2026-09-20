@@ -74,7 +74,7 @@ p { margin: 0 0 1.1em; max-width: var(--measure); }
 a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
 a:hover { border-bottom-color: currentColor; }
 
-img { max-width: 100%; height: auto; display: block; }
+img, video { max-width: 100%; height: auto; display: block; }
 
 hr { border: 0; border-top: 1px solid var(--border); margin: 3rem 0; }
 
@@ -462,6 +462,13 @@ main { padding: 56px 0 80px; }
   border-radius: var(--radius);
   padding: 10px;
 }
+.fig video {
+  width: 100%;
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
 .fig img + img { margin-top: 12px; }
 .fig figcaption {
   margin-top: 10px;
