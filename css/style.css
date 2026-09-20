@@ -191,11 +191,12 @@ main { padding: 56px 0 80px; }
 }
 
 /* Affiliation logos ------------------------------------------------------
-   Stacked under the photo: ASU, then ISAE-SUPAERO, matched on width.
-   Both are pure white art on a transparent background. */
+   Stacked under the photo: ASU, ISAE-SUPAERO, then JPL, matched on width.
+   All three are pure white art on a transparent background. */
 
 .logo-asu,
-.logo-isae {
+.logo-isae,
+.logo-jpl {
   width: 180px;                    /* same width as the photo, and as each other */
   height: auto;
 }
@@ -204,18 +205,20 @@ main { padding: 56px 0 80px; }
    a grey close to the body text. Left untouched in dark mode, where white is
    exactly what the background needs. */
 .logo-asu,
-.logo-isae { filter: brightness(0.35); }
+.logo-isae,
+.logo-jpl { filter: brightness(0.35); }
 
 @media (prefers-color-scheme: dark) {
   .logo-asu,
-  .logo-isae { filter: none; }
+  .logo-isae,
+  .logo-jpl { filter: none; }
 }
 
 @media (max-width: 640px) {
   .hero { grid-template-columns: 1fr; gap: 24px; }
   .hero-photo { width: 140px; height: 140px; }
   .hero-aside { width: 140px; }
-  .logo-asu, .logo-isae { width: 140px; }
+  .logo-asu, .logo-isae, .logo-jpl { width: 140px; }
 }
 
 /* --------------------------------------------------------------- links -- */
