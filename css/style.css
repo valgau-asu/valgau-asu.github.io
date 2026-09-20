@@ -195,8 +195,7 @@ main { padding: 56px 0 80px; }
    Files live in pictures/logo/. ASU and ISAE are pure white art on a
    transparent background; JPL is full colour on transparent. */
 
-.logo-asu,
-.logo-jpl {
+.logo-asu {
   width: 180px;                    /* same width as the photo */
   height: auto;
 }
@@ -219,14 +218,13 @@ main { padding: 56px 0 80px; }
 @media (prefers-color-scheme: dark) {
   .logo-asu,
   .logo-isae { filter: none; }
-  .logo-jpl { opacity: 0.9; }
 }
 
 @media (max-width: 640px) {
   .hero { grid-template-columns: 1fr; gap: 24px; }
   .hero-photo { width: 140px; height: 140px; }
   .hero-aside { width: 140px; }
-  .logo-asu, .logo-jpl { width: 140px; }
+  .logo-asu { width: 140px; }
   .logo-isae { width: 93px; }
 }
 
@@ -560,6 +558,31 @@ main { padding: 56px 0 80px; }
 .video-vertical figcaption { text-align: center; }
 
 /* -------------------------------------------------------------- footer -- */
+
+/* Affiliation logos in the footer. Matched on height so they read as one row
+   despite very different proportions. */
+.footer-logos {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.footer-logo { height: 26px; width: auto; }
+
+/* ESA ships as white art on transparent: invisible on the light page, so it is
+   knocked down to a grey. Untouched in dark mode, where white is correct. */
+.footer-esa { filter: brightness(0.45); }
+
+@media (prefers-color-scheme: dark) {
+  .footer-esa { filter: none; }
+  .footer-jpl, .footer-nsf { opacity: 0.9; }
+}
+
+@media (max-width: 640px) {
+  .footer-logos { gap: 16px; }
+  .footer-logo { height: 22px; }
+}
 
 .site-footer {
   border-top: 1px solid var(--border);
