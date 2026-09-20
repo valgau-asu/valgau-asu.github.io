@@ -9,3 +9,9 @@ projects_content/
 
 # Airbus internship report: kept locally, not published.
 pdfs/SFE_Article_Airbus.pdf
+
+# Original ESA workshop photos: kept locally as masters. The site serves the
+# optimised copies in pictures/projects/esa/.
+pictures/FrontPageLove.png
+pictures/ESAExpertsGivingLectureToStudents.png
+pictures/WorkingTogetherOnMissionDesign.png
