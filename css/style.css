@@ -269,7 +269,10 @@ main { padding: 56px 0 80px; }
   aspect-ratio: 16 / 9;
   width: 100%;
   object-fit: cover;
-  background: var(--bg-soft);
+  /* White, not a theme token: some thumbnails are diagrams with transparent
+     backgrounds, and on the dark theme they would otherwise show dark art on
+     a dark card. Opaque photo thumbnails are unaffected. */
+  background: #fff;
   border-bottom: 1px solid var(--border);
 }
 
