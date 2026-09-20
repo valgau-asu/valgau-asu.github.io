@@ -570,16 +570,14 @@ main { padding: 56px 0 80px; }
 
 .footer-logo { height: 26px; width: auto; }
 
-/* ESA and the JPL wordmark are white art on transparent: invisible on the light
-   page, so both are knocked down to a grey. Untouched in dark mode, where white
-   is correct. NASA and NSF are full colour and work on either background. */
-.footer-esa,
-.footer-jpl { filter: brightness(0.45); }
+/* ESA ships as white art on transparent: invisible on the light page, so it is
+   knocked down to a grey. Untouched in dark mode, where white is correct.
+   JPL and NSF are full colour and work on either background. */
+.footer-esa { filter: brightness(0.45); }
 
 @media (prefers-color-scheme: dark) {
-  .footer-esa,
-  .footer-jpl { filter: none; }
-  .footer-nasa, .footer-nsf { opacity: 0.92; }
+  .footer-esa { filter: none; }
+  .footer-jpl, .footer-nsf { opacity: 0.9; }
 }
 
 @media (max-width: 640px) {
