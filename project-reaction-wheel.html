@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real-Time Control of a Reaction Wheel — Valentin Gaucher</title>
+<meta name="description" content="Coursework at ISAE-SUPAERO: designing and implementing a real-time control system in C for a single-axis satellite platform driven by a reaction wheel.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="phd-research.html">PhD Research</a></li>
+      <li><a href="other-projects.html" aria-current="page">Other Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="other-projects.html">&larr; Other Projects</a></p>
+
+    <p class="course-badge">Coursework &middot; ISAE-SUPAERO</p>
+    <h1>Real-time control of a satellite reaction wheel</h1>
+    <p class="project-meta">
+      Taking a controller from Simulink to C running on embedded hardware, on a real
+      single-axis platform.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/rwheel/rw-platform.jpg" alt="Annotated photo of the test platform showing the reaction wheel, motor, encoder, electronics interface board, embedded computer, gyro and protractor." width="900" height="651">
+      <figcaption>The single-axis platform: reaction wheel with motor and encoder, electronics interface board, embedded computer, gyro and protractor.</figcaption>
+    </figure>
+
+    <h2>The setup</h2>
+    <p>
+      A tray free to rotate about one axis, driven by a reaction wheel &mdash; the same
+      momentum-exchange principle a satellite uses. Six components: the wheel, motor, encoder,
+      electronics interface board, embedded computer and a user interface. Platform
+      displacement is measured with a protractor and a gyrometer.
+    </p>
+
+    <table class="data-table">
+      <caption>Platform characteristics.</caption>
+      <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Platform inertia \(J_p\)</td><td>0.00124 kg&middot;m²</td></tr>
+        <tr><td>Wheel inertia \(J_r\)</td><td>\(J_p / 100\)</td></tr>
+        <tr><td>Viscous friction</td><td>1–2 mN&middot;m</td></tr>
+        <tr><td>Coulomb friction</td><td>2.5 mN&middot;m</td></tr>
+        <tr><td>Platform range</td><td>\(-\pi\) to \(+\pi\) rad</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Part 1 &mdash; The real-time system</h2>
+    <p>
+      Before any control law, the software has to be built as a real-time system: requirements,
+      specification, then design, following the system life cycle. The machine was written in
+      <strong>C, developed in NetBeans</strong>.
+    </p>
+    <p>
+      The part that distinguishes real-time work from ordinary programming is the schedule.
+      Tasks have deadlines, and the schedule has to allocate the available computational
+      resources so every task meets its own &mdash; a control loop that is correct but late is
+      simply wrong.
+    </p>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/rwheel/rw-archi.png" alt="Logical architecture of the real-time system." width="900" height="487">
+      <img src="pictures/projects/rwheel/rw-schedule.png" alt="Task schedule showing timing and duration of each periodic task." width="900" height="100">
+      <figcaption>Logical architecture, and the task schedule that has to satisfy every deadline.</figcaption>
+    </figure>
+
+    <h2>Part 2 &mdash; The controller</h2>
+    <p>
+      With voltage \(u\) as input and platform angle \(\theta\) as output, the full model has
+      four poles, split between electrical and mechanical dynamics. It is
+      <strong>open-loop unstable</strong> &mdash; three poles at the origin from the mechanical
+      side.
+    </p>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/rwheel/rw-rootlocus.png" alt="Root locus of the full system showing fast electrical pole and dominant mechanical poles." width="900" height="675">
+      <img src="pictures/projects/rwheel/rw-laws.png" alt="Comparison of the synthesised control laws." width="900" height="873">
+      <figcaption>The root locus justifies the model reduction; the control laws are then compared on the reduced model.</figcaption>
+    </figure>
+
+    <p>
+      The root locus earns its place here: it shows the electrical pole is <em>much</em> faster
+      than the mechanical ones, so the electrical dynamics can be removed and the measurement
+      feedback that served them dropped with it. Design proceeds on the simplified model &mdash;
+      but subject to a hard constraint from the hardware, not the mathematics:
+    </p>
+    \[ -0.66\ \text{A} < I_{ref} < 0.66\ \text{A} \]
+    <p>
+      exceed it and the command saturates. Several structures were synthesised &mdash; PD by
+      modal control, PID, and a phase-lead compensator. For the PD, placing the closed loop as
+      a second-order system with chosen \(\omega\) and damping \(\delta\) exposes the real
+      trade-off: raising \(\omega\) makes the system faster and improves disturbance rejection,
+      but raises the initial current draw, and for some values it <strong>exceeds the 0.66 A
+      limit</strong>. Raising \(\delta\) cuts overshoot at the cost of speed.
+    </p>
+
+    <h3>Discretisation</h3>
+    <figure class="fig">
+      <img src="pictures/projects/rwheel/rw-c2d.png" alt="Comparison of continuous and discretised controller responses." width="900" height="430">
+      <figcaption>Continuous design against its discrete implementation.</figcaption>
+    </figure>
+    <p>
+      A controller designed in continuous time does not arrive on the embedded computer intact.
+      The discretisation analysis is where the sampling period stops being a free parameter and
+      becomes a design constraint tied back to the task schedule from part one.
+    </p>
+
+    <h2>Why it was worth doing</h2>
+    <p>
+      Most control coursework stops at the simulation. This one continues through scheduling,
+      C implementation, discretisation and experimental validation on hardware that has real
+      friction, a real current limit and a real deadline &mdash; the three things that usually
+      break a controller that looked fine in Simulink.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

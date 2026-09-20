@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Satellite Attitude Control and Estimation — Valentin Gaucher</title>
+<meta name="description" content="Coursework at ISAE-SUPAERO: modelling, robust control and gyro-stellar Kalman estimation for the flexible micro-satellite DEMETER.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="phd-research.html">PhD Research</a></li>
+      <li><a href="other-projects.html" aria-current="page">Other Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="other-projects.html">&larr; Other Projects</a></p>
+
+    <p class="course-badge">Coursework &middot; ISAE-SUPAERO / ONERA</p>
+    <h1>Attitude control and estimation for a flexible micro-satellite</h1>
+    <p class="project-meta">
+      Modelling, robust control and gyro-stellar hybridization for DEMETER &middot;
+      supervised by Jean-Marc Biannic and Cl&eacute;ment Roos (ONERA).
+    </p>
+
+    <p class="note">
+      This brings together two pieces of coursework that belong to the same problem: designing
+      the controller, and designing the estimator that feeds it. Separating them makes neither
+      make much sense &mdash; a pointing controller is only as good as the attitude estimate it
+      acts on.
+    </p>
+
+    <h2>The satellite</h2>
+    <p>
+      DEMETER was a CNES micro-satellite launched in 2004 to investigate ionospheric
+      disturbances linked to seismic and volcanic activity &mdash; it detected a substantial
+      surge in ultra-low-frequency radio waves before the 2010 Haiti earthquake. Structurally
+      it is a central body with solar panels and <strong>four flexible appendices</strong> at
+      different orientations, which is what makes the control problem interesting: the
+      science mode demands precise pointing from a structure that bends.
+    </p>
+
+    <h2>Part 1 &mdash; Modelling and control</h2>
+    <p>
+      The open-loop model integrates the flexible satellite dynamics with actuator, sensor and
+      estimator models, so the controller is designed against the system as it actually
+      behaves rather than a rigid-body idealisation.
+    </p>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/demeter/demeter-openloop.png" alt="Open-loop block diagram of the satellite model with actuators and sensors." width="950" height="142">
+      <img src="pictures/projects/demeter/demeter-closedloop.png" alt="Closed-loop control block diagram built in Simulink." width="950" height="321">
+      <figcaption>Open-loop model, then the closed loop built around it.</figcaption>
+    </figure>
+
+    <p>Three controller structures were synthesised and compared:</p>
+    <ul>
+      <li><strong>PID via modal control</strong> &mdash; gains placed to give the closed loop a chosen natural frequency and damping.</li>
+      <li><strong>Full-order \(H_\infty\)</strong> &mdash; optimal but high-order, and not what you want to fly.</li>
+      <li><strong>Structured \(H_\infty\)</strong> &mdash; the same robustness objectives constrained to a fixed, implementable controller structure.</li>
+    </ul>
+
+    <h3>Large pointing errors</h3>
+    <p>
+      For a large slew, a linear controller wastes reaction-wheel effort. A nonlinear law
+      drives the error down more economically:
+    </p>
+    \[ T_c^{NL} = k\left(\dot{\theta}_d \times \operatorname{sign}(\theta_{ref} - \theta_m) - \dot{\theta}_e\right) \]
+    <p>
+      It reaches a 20&deg; target in about 120 s &mdash; but leaves <em>undamped oscillations</em>
+      at steady state. The fix is a <strong>switching strategy</strong>: run the nonlinear law
+      while the error is large, then hand over to the modal controller
+      \(T_c = K_P(\theta_{ref}-\theta_m) - K_D\dot{\theta}_e\) near the target. Each law is used
+      only where it is good, and the limit cycle disappears.
+    </p>
+
+    <h3>Reaction wheel desaturation</h3>
+    <p>
+      A persistent disturbance eventually saturates the reaction wheel, at which point the
+      delivered torque goes to zero and the satellite is no longer controlled &mdash; it
+      diverges under the disturbance. Unloading needs a second actuator, and
+      <strong>magnetorquers</strong> win over thrusters: lightweight, reliable, and propellant-free,
+      so they work indefinitely as long as the solar panels supply power. Anti-windup control
+      handles the saturation itself.
+    </p>
+
+    <h2>Part 2 &mdash; Gyro-stellar estimation</h2>
+    <p>
+      The controller assumes it knows the attitude. It does not &mdash; it has a gyro, which is
+      precise but drifts, and a star tracker, which is absolutely accurate but slow and noisy.
+      A Kalman filter fuses them so each covers the other's weakness.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/demeter/demeter-kalman.png" alt="Block diagram of the gyro-stellar hybridization Kalman filter." width="900" height="246">
+      <figcaption>Gyro-stellar hybridization: gyro rate integrated for bandwidth, star tracker for absolute correction.</figcaption>
+    </figure>
+
+    <p>
+      Starting analytically, the first-order continuous model treats the measured rate as the
+      input and the star tracker as the measurement:
+    </p>
+    \[ \dot{\theta} = q_m - n_q, \qquad \theta_m = \theta + n_\theta \]
+    <p>
+      The steady-state Riccati equation then gives the optimal gain in closed form. With
+      \(\dot{P} = 0\):
+    </p>
+    \[ \dot{P}(t) = -\frac{P^2(t)}{v^2} + w_q^2 \;\Longrightarrow\; P = v\,w_q \]
+    <p>
+      taking the positive root because \(P\) is a variance. The filter was then extended to a
+      second-order model, discretised at \(T_s = 0.025\) s with the star tracker running
+      \(N = 10\) times slower, and implemented in MATLAB/Simulink.
+    </p>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/demeter/demeter-noise.png" alt="Estimation performance under measurement noise." width="900" height="434">
+      <img src="pictures/projects/demeter/demeter-sttloss.png" alt="Filter behaviour when star tracker measurements are lost at t=50 seconds." width="900" height="675">
+      <figcaption>Behaviour under sensor noise, and under complete loss of the star tracker at \(t = 50\) s.</figcaption>
+    </figure>
+
+    <p class="callout">
+      Two results worth keeping. <strong>Gyro bias is not a nuisance, it is a failure mode</strong>
+      &mdash; if the filter does not model it, the output never reaches the commanded value and
+      a steady offset persists. And the <strong>star-tracker loss test</strong> is the real
+      justification for hybridization: with the absolute reference gone, the estimate survives
+      on integrated gyro rate, degrading gracefully instead of failing.
+    </p>
+
+    <h2>Validation</h2>
+    <p>
+      Stability and performance were checked by simulation and by <strong>&mu;-analysis</strong>
+      over an uncertain parameter set &mdash; the flexible modes of a structure like this are
+      not known exactly, so a controller that only works at nominal parameters is not a
+      controller you would fly.
+    </p>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/demeter/demeter-sims.png" alt="Closed-loop validation simulations." width="900" height="380">
+      <img src="pictures/projects/demeter/demeter-mu.png" alt="M-Delta structure used for mu-analysis of the uncertain closed loop." width="876" height="900">
+      <figcaption>Validation simulations, and the \(M\)&ndash;\(\Delta\) structure used for \(\mu\)-analysis.</figcaption>
+    </figure>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
