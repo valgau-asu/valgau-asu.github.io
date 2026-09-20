@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ESA Concurrent Engineering Workshop — Valentin Gaucher</title>
+<meta name="description" content="ESA Academy Concurrent Engineering Workshop 2022: designing LOVE, a Venus orbiter and floating platform, in ESA's Concurrent Design Facility. AOCS team.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="phd-research.html">PhD Research</a></li>
+      <li><a href="other-projects.html" aria-current="page">Other Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="other-projects.html">&larr; Other Projects</a></p>
+
+    <p class="course-badge">Workshop &middot; ESA Academy, ESA-ESEC Belgium &middot; October 2022</p>
+    <h1>Designing a Venus mission in ESA&rsquo;s Concurrent Design Facility</h1>
+    <p class="project-meta">
+      ESA Academy Concurrent Engineering Workshop 2022 &middot; I was on the AOCS team.
+    </p>
+    <div class="pub-links">
+      <a href="https://www.esa.int/Education/ESA_Academy/Concurrent_Engineering_takes_students_to_Venus">ESA write-up of the workshop</a>
+    </div>
+
+    <h2>The setting</h2>
+    <p>
+      Thirty university students from thirteen ESA Member States and Malta, four days, at ESA
+      Academy&rsquo;s Training and Learning Facility at ESA-ESEC in Belgium &mdash; which also
+      houses ESA&rsquo;s educational
+      <a href="https://www.esa.int/Enabling_Support/Space_Engineering_Technology/CDF">Concurrent Design Facility</a>.
+      Two ESA systems engineers and a systems engineering assistant from ESA&rsquo;s Systems and
+      Concurrent Engineering Section provided the tuition.
+    </p>
+    <p>
+      The point of the workshop is the <em>method</em> rather than the mission. In concurrent
+      engineering, every subsystem is designed in the same room at the same time, so a choice
+      made in one propagates immediately to all the others instead of surfacing weeks later in
+      an integration review. Sessions ran in ESA&rsquo;s CDF using the concurrent model-based
+      design tool the facility works with.
+    </p>
+
+    <h2>The challenge: LOVE</h2>
+    <p>
+      On day one the teams were handed the problem: design a mission carrying both a spacecraft
+      and a <strong>floating platform</strong> to Venus. Venus is close to Earth in size and
+      density, which makes it a natural laboratory for how habitability evolved in the Solar
+      System &mdash; and a punishing thermal environment. The students named the mission
+      <strong>LOVE</strong>, for Large Orbiter Venus Explorer.
+    </p>
+    <p>Three constraints did most of the work in shaping the design:</p>
+    <ul>
+      <li>survive the <strong>thermal environment</strong> at Venus,</li>
+      <li>carry a large floating platform in addition to the orbiter,</li>
+      <li>fit inside the mass budget of a <strong>single Ariane 6.2 launch</strong>.</li>
+    </ul>
+    <p>
+      Nine teams covered configuration, structures and mechanisms, trajectory analysis,
+      propulsion, AOCS, power, thermal, communications and data handling, and optics and
+      sensors. <strong>I worked on AOCS</strong> &mdash; attitude and orbit control.
+    </p>
+
+    <h2>How it actually went</h2>
+    <p>
+      The scale of the problem showed up quickly. Reaching another planet with an orbiter
+      <em>and</em> a floating platform put volume and mass under immediate pressure, so the
+      trajectory and propulsion teams had to work through many options rather than settle on
+      one early. Thermal was the other pinch point: Venus demands large radiators, and large
+      radiators need somewhere to sit where they never see the Sun &mdash; a configuration
+      problem as much as a thermal one.
+    </p>
+    <p>
+      The engineers pushed the teams through <strong>two full design iterations</strong>,
+      assessing each subsystem&rsquo;s needs and functions before consolidating, then refining
+      everything in a second pass toward a converged design. The week ended with a presentation
+      to ESA experts: the final design, the trade-offs behind it, and an honest list of what
+      remained open.
+    </p>
+
+    <h2>What I took from it</h2>
+    <p>
+      The lesson that stuck is the one the method is built to teach: on a spacecraft,
+      <em>subsystems are not separable</em>. An AOCS decision about actuators is also a power
+      decision, a mass decision, and a configuration decision, and you find that out in minutes
+      rather than months when everyone is designing in the same room. That coupling is the same
+      thing I now work on formally &mdash; in
+      <a href="phd-research.html">hybrid systems</a>, where the interaction between modes is
+      exactly what makes the control problem hard.
+    </p>
+
+    <p class="note">
+      Related: the <a href="project-comets.html">COMETS constellation study</a> at
+      ISAE-SUPAERO, where I owned AOCS and mission analysis on a six-person team.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
