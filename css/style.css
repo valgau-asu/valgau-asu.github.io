@@ -588,13 +588,8 @@ main { padding: 56px 0 80px; }
 
 .footer-logo { height: 26px; width: auto; }
 
-/* ESA ships as white art on transparent: invisible on the light page, so it is
-   knocked down to a grey. Untouched in dark mode, where white is correct.
-   JPL and NSF are full colour and work on either background. */
-.footer-esa { filter: brightness(0.45); }
-
+/* Both remaining logos are full colour and work on either background. */
 @media (prefers-color-scheme: dark) {
-  .footer-esa { filter: none; }
   .footer-jpl, .footer-nsf { opacity: 0.9; }
 }
 
