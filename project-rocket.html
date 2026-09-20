@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tonnerre de Brest — Valentin Gaucher</title>
+<meta name="description" content="Student rocket club project at ENSTA Bretagne: designing, building and flying a mini-rocket with onboard pressure-based altitude measurement, launched at C'space.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="projects.html" aria-current="page">Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="media.html">Talks &amp; Media</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="projects.html">&larr; Projects</a></p>
+
+    <p class="course-badge">Student club project &middot; Spacieta, ENSTA Bretagne</p>
+    <h1>Tonnerre de Brest: a mini-rocket with onboard altimetry</h1>
+    <p class="project-meta">
+      Seven club members designed, built and flew a mini-rocket carrying a pressure-based
+      altitude experiment, launched at C&rsquo;space under Planète Sciences supervision.
+      I was president of the club at the time.
+    </p>
+    <p class="note">
+      Team: Valentin Gaucher, Louis-Maël Merlet, Mathieu Beot, Anna Brykman, Lucas Ducrocq,
+      Elouan Petereau and Marc Poggi.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/rocket/rocket-flight.jpg" alt="The Tonnerre de Brest rocket recovered on the ground after its flight." width="900" height="415">
+      <figcaption>Tonnerre de Brest after its nominal flight.</figcaption>
+    </figure>
+
+    <h2>The build</h2>
+    <p>The airframe splits into three parts:</p>
+    <ul>
+      <li>a <strong>propulsion block</strong> holding the booster,</li>
+      <li>a <strong>core section</strong> housing the parachute, the ejection mechanism and the experiment electronics,</li>
+      <li>a <strong>fairing</strong>.</li>
+    </ul>
+    <p>
+      The propulsion rings are 75 mm in diameter. The booster is held by a retaining bracket
+      &mdash; a tab clamped by two bolts around a screw &mdash; chosen deliberately over anything
+      cleverer because the tab's position is adjustable, so the clamping pressure against the
+      booster flange can be tuned by hand. The fins were mounted with about 1 mm of clearance
+      to the booster, to tolerate the booster swelling in flight.
+    </p>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/rocket/rocket-build.jpg" alt="The assembled rocket airframe." width="900" height="748">
+      <img src="pictures/projects/rocket/rocket-chute.jpg" alt="The parachute ejection mechanism inside the core section." width="900" height="677">
+      <figcaption>The airframe, and the parachute ejection mechanism in the core section.</figcaption>
+    </figure>
+
+    <h2>Electronics</h2>
+    <p>
+      An Arduino Nano runs the flight computer, with a barometric pressure sensor as the
+      experiment payload. Two separate 9 V supplies power the system: one for the servo that
+      opens the parachute hatch, one for everything else. The reasoning was that a single
+      supply might sag during flight, leaving the servo without the torque to open the hatch
+      &mdash; and a parachute that does not deploy is the failure that destroys the rocket.
+      A body-mounted switch arms the computer.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/rocket/rocket-circuit.png" alt="Schematic of the rocket's electrical circuit." width="900" height="768">
+      <figcaption>The onboard electrical architecture.</figcaption>
+    </figure>
+
+    <h2>Launch campaign</h2>
+    <p>
+      The rocket arrived at C&rsquo;space unfinished. The tube was machined on site for the
+      switch and status LEDs, and the fins &mdash; judged too sharp by the safety inspection &mdash;
+      were sanded down. After passing qualification with Planète Sciences staff, the team went
+      to the pad.
+    </p>
+    <p>
+      Then, with the parachute folded and loaded, <strong>the ejection hatch opened on the
+      pad</strong>, just before launch. The servo had lost power. It was caught and fixed in
+      time, and the rocket flew.
+    </p>
+
+    <h2>Flight data</h2>
+    <figure class="fig">
+      <img src="pictures/projects/rocket/rocket-data.png" alt="Flight telemetry: altitude in blue peaking near 75 metres, axial acceleration in orange, with red vertical lines marking flight state transitions." width="950" height="618">
+      <figcaption>
+        Recovered telemetry. Blue is altitude, orange the axial acceleration. The red lines
+        mark flight-state transitions: 0&rarr;1 is lift-off detected by the jack cable,
+        1&rarr;3 is the timer commanding parachute release.
+      </figcaption>
+    </figure>
+    <p>
+      The flight was nominal and the rocket was recovered largely reusable, with the data
+      intact. Peak altitude was <strong>75 m against a predicted 128 m</strong> &mdash; a large
+      enough shortfall to be the most interesting number in the project, and the conclusion
+      points at the likely cause: the rocket came out heavier than designed.
+    </p>
+    <p class="note">
+      Note that the time axis starts at 535 s, not zero: the flight computer was armed well
+      before launch and its timer had been running since.
+    </p>
+
+    <h2>What it was good for</h2>
+    <p>
+      A complete cycle &mdash; design, build, qualify, fly, recover, analyse &mdash; run by
+      students on a deadline, with a real launch campaign at the end of it. The second planned
+      experiment, an onboard flight camera, was cut deliberately rather than risk the whole
+      project missing the campaign; that trade was the right call and the rocket flew because
+      of it.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

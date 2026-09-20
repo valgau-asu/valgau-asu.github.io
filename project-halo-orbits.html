@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Halo and Lyapunov Orbits — Valentin Gaucher</title>
+<meta name="description" content="An independent study of stability at the Lagrange points and Halo orbits in the circular restricted three-body problem, written during classe préparatoire.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="projects.html" aria-current="page">Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="media.html">Talks &amp; Media</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="projects.html">&larr; Projects</a></p>
+
+    <p class="course-badge">Independent study &middot; Classe pr&eacute;paratoire, Lyc&eacute;e Fran&ccedil;ois I<sup>er</sup>, France</p>
+    <h1>Stability at the Lagrange points and Halo orbits</h1>
+    <p class="project-meta">
+      A self-directed study of the circular restricted three-body problem, written at 19.
+    </p>
+
+    <p class="callout">
+      This is an exposition, not original research &mdash; the theory is classical and the
+      numerics reproduce known results. I have kept it here because it is where my interest
+      in orbital mechanics and dynamical systems started, and because the shooting method
+      and stability analysis in it are the same tools I use now on hybrid systems.
+    </p>
+
+    <h2>The problem</h2>
+    <p>
+      The three-body problem admits no analytical solution. Euler, Lagrange, Laplace, Jacobi
+      and Le Verrier all failed at it; only exotic configurations integrate, like the
+      Copenhagen problem (two equal masses) or the Pythagorean problem (mass ratio 3:4:5).
+      One case does allow analytic simplification: when the third body's mass is negligible
+      against the other two. That is the <em>circular restricted three-body problem</em>
+      (CR3BP).
+    </p>
+    <p>
+      The two massive <em>primaries</em> orbit their common centre of mass on circles, and
+      the problem is written in <strong>synodic coordinates</strong> &mdash; a frame rotating
+      with them, the \(x\)-axis joining primary 1 to primary 2. With canonical units (the
+      primary separation as the distance unit, \(G = 1\), a full primary orbit taking
+      \(2\pi\) time units), the entire system is characterised by a single mass ratio:
+    </p>
+    \[ \mu = \frac{m_2}{m_1 + m_2} \]
+    <p>
+      For the Earth&ndash;Moon system \(\mu \approx 0.0122\). Five equilibria &mdash; the Lagrange
+      points &mdash; appear in this rotating frame, and \(L_1\), \(L_2\) and \(L_3\) are unstable.
+      Periodic orbits exist around them, which is why real missions park there.
+    </p>
+
+    <h2>Stability and manifolds</h2>
+    <p>
+      Writing \(\phi(t, t_0)\) for the flow map that carries a state from time \(t_0\) to
+      time \(t\), a trajectory starting slightly off a nominal one, at
+      \(\bar{x}_0 + \delta\bar{x}_0\), separates as
+    </p>
+    \[ \delta\bar{x}(t) = \phi(t, x_0 + \delta x_0) - \phi(t, x_0) \]
+    <p>
+      Linearising gives the state transition matrix, and evaluating it over exactly one
+      period gives the <strong>monodromy matrix</strong>, whose eigenvalues classify the
+      orbit's stability. The eigenvectors give the <em>stable</em> and <em>unstable
+      manifolds</em> \((W_s, W_u)\): the sets of points whose forward (or backward) half-orbits
+      converge onto the periodic orbit. These manifolds are what make low-energy transfers
+      possible &mdash; you ride them instead of burning fuel.
+    </p>
+
+    <h2>Computing the orbits: a shooting method</h2>
+    <p>
+      Finding a periodic orbit is a boundary value problem, solved here with a
+      <strong>Poincaré section</strong> and a shooting method. Exploit the symmetry of the
+      CR3BP: start on the \(x\)-axis with velocity perpendicular to it, integrate forward,
+      and if the trajectory crosses the axis perpendicularly again at \(T_{1/2}\), the full
+      orbit closes by symmetry. So the search reduces to one scalar condition on a half-orbit.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/orbits/orbit-halforbit.png" alt="Two half-orbits computed from different initial vertical velocities, one overshooting and one undershooting the axis crossing." width="900" height="311">
+      <figcaption>Two half-orbits from different initial \(v_y\). The shooting method iterates on this until the return crossing is perpendicular.</figcaption>
+    </figure>
+
+    <figure class="fig">
+      <img src="pictures/projects/orbits/orbit-linear.png" alt="Plot of initial y-position against initial vertical velocity, showing a near-linear relationship close to the Lagrange point." width="900" height="317">
+      <figcaption>Initial conditions \((y_0, v_{y,0})\) for converged orbits. Close to the Lagrange point the relationship is near-linear, which gives a good first guess for the next orbit in the family.</figcaption>
+    </figure>
+
+    <h2>Results</h2>
+    <p>
+      Sweeping initial conditions traces out a whole family of periodic orbits growing away
+      from the Lagrange point.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/orbits/orbit-family.png" alt="Four panels showing simulated orbits after 1, 2, 3 and 4 revolutions, with the trajectory visibly diverging by the fourth." width="900" height="454">
+      <figcaption>The same orbit integrated for 1, 2, 3 and 4 revolutions. The divergence by the fourth pass is the instability of \(L_1\) made visible &mdash; these orbits need station-keeping in practice.</figcaption>
+    </figure>
+
+    <figure class="fig">
+      <img src="pictures/projects/orbits/orbit-60.png" alt="Simulation over 60 orbits showing accumulated drift." width="800" height="598">
+      <figcaption>Integrated over 60 orbits. Numerical error and physical instability compound.</figcaption>
+    </figure>
+
+    <p>
+      The manifolds then give a transfer. Following the unstable manifold of an \(L_1\) orbit
+      onto the stable manifold of an \(L_2\) orbit connects the two without a large burn:
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/orbits/orbit-transfer.png" alt="Simulated trajectory transferring from an L1 orbit to an L2 orbit in the Earth-Moon system." width="900" height="649">
+      <figcaption>An \(L_1 \to L_2\) transfer in the Earth&ndash;Moon system, computed with the shooting code.</figcaption>
+    </figure>
+
+    <h2>Looking back</h2>
+    <p>
+      The instinct in this write-up &mdash; linearise about an equilibrium, read stability off
+      the eigenvalues, then use the structure to steer rather than fight it &mdash; is the same
+      instinct behind
+      <a href="project-dual-quaternion.html">the collision recovery work</a> and
+      <a href="project-hybrid-mpc.html">the hybrid MPC</a>. Different manifolds, same habits.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
