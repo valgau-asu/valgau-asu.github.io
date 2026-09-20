@@ -27,8 +27,12 @@
   --radius: 6px;
 }
 
+/* Dark theme. Applied when the OS asks for dark AND the visitor has not
+   explicitly chosen light, or when they have explicitly chosen dark. The
+   toggle in the header sets data-theme on <html>; with no choice stored the
+   site simply follows the OS, exactly as it did before. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #14130f;
     --bg-soft: #1c1b17;
     --surface: #1c1b17;
@@ -40,6 +44,18 @@
     --accent-soft: rgba(217, 139, 116, 0.12);
   }
 }
+
+:root[data-theme="dark"] {
+    --bg: #14130f;
+    --bg-soft: #1c1b17;
+    --surface: #1c1b17;
+    --text: #eceae4;
+    --text-muted: #a8a49b;
+    --text-faint: #7d7970;
+    --border: #322f29;
+    --accent: #d98b74;
+    --accent-soft: rgba(217, 139, 116, 0.12);
+  }
 
 /* --------------------------------------------------------------- base --- */
 
@@ -126,6 +142,27 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
 .nav-links a:hover { color: var(--text); }
 .nav-links a[aria-current="page"] { color: var(--text); border-bottom-color: var(--accent); }
 
+/* Theme toggle. Hidden until JavaScript enables it, since without JS it could
+   not do anything. */
+.theme-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  padding: 5px 8px;
+  margin-left: 18px;
+  cursor: pointer;
+  line-height: 0;
+}
+.theme-toggle:hover { color: var(--text); border-color: var(--accent); }
+.theme-toggle svg { width: 17px; height: 17px; display: block; }
+.theme-toggle.is-ready { display: block; }
+
+/* Push the links (and the toggle after them) to the right. */
+.nav { justify-content: flex-start; }
+.nav-links { margin-left: auto; }
+
 .nav-toggle {
   display: none;
   background: none;
@@ -138,8 +175,9 @@ code { font-family: var(--font-mono); font-size: 0.9em; }
 }
 
 @media (max-width: 640px) {
-  .nav-toggle { display: block; }
+  .nav-toggle { display: block; margin-left: auto; }
   .nav-links {
+    margin-left: 0;
     display: none;
     position: absolute;
     top: 100%;
@@ -218,10 +256,14 @@ main { padding: 56px 0 80px; }
 .logo-jpl { filter: brightness(0.35); }
 
 @media (prefers-color-scheme: dark) {
-  .logo-asu,
-  .logo-isae,
-  .logo-jpl { filter: none; }
+  :root:not([data-theme="light"]) .logo-asu,
+  :root:not([data-theme="light"]) .logo-isae,
+  :root:not([data-theme="light"]) .logo-jpl { filter: none; }
 }
+
+:root[data-theme="dark"] .logo-asu,
+:root[data-theme="dark"] .logo-isae,
+:root[data-theme="dark"] .logo-jpl { filter: none; }
 
 @media (max-width: 640px) {
   .hero { grid-template-columns: 1fr; gap: 24px; }
@@ -600,8 +642,12 @@ main { padding: 56px 0 80px; }
 
 /* Both remaining logos are full colour and work on either background. */
 @media (prefers-color-scheme: dark) {
-  .footer-jpl, .footer-nsf { opacity: 0.9; }
+  :root:not([data-theme="light"]) .footer-jpl,
+  :root:not([data-theme="light"]) .footer-nsf { opacity: 0.9; }
 }
+
+:root[data-theme="dark"] .footer-jpl,
+:root[data-theme="dark"] .footer-nsf { opacity: 0.9; }
 
 @media (max-width: 640px) {
   .footer-logos { gap: 16px; }

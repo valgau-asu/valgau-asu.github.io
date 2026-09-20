@@ -46,6 +46,12 @@ them plainly. Pass a port if 8000 is busy: `python3 dev.py 3000`.
   pages only. It is the site's one external dependency.
 - **The nav bar** is copied into all four top-level pages. If you add a page, add the link in
   all five, and set `aria-current="page"` on the current page's own link.
+- **Light / dark theme:** the site follows the operating system by default. The
+  button in the header overrides that and stores the choice in `localStorage`,
+  applied via `data-theme` on `<html>`. Dark rules are written twice — once
+  under `prefers-color-scheme` guarded by `:not([data-theme="light"])`, once
+  under `[data-theme="dark"]` — so a new dark rule must be added in both places.
+
 - **If a CSS change does not show up:** GitHub Pages caches `style.css` for 10
   minutes. Hard-refresh (⌘⇧R), or bump the version in the stylesheet link —
   `css/style.css?v=2` becomes `?v=3` — in every page, which forces every visitor
