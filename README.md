@@ -8,7 +8,9 @@ Plain HTML/CSS/JS. No build step, no dependencies. Edit a file, refresh the brow
 index.html          About / landing page
 experience.html     Research and engineering positions
 projects.html       Project cards
-project-*.html      Long-form project write-ups (KaTeX for equations)
+project-*.html      Long-form project write-ups (KaTeX for equations).
+                    Research and coursework are kept in separate sections
+                    on projects.html and coursework pages carry a badge.
 publications.html   Publication list
 media.html          Talks, videos, slides
 css/style.css       All styling. Colors live in :root at the top.

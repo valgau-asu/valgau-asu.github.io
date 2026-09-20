@@ -412,6 +412,30 @@ main { padding: 56px 0 80px; }
 .video-caption h3 { margin-bottom: 0.25em; }
 .video-caption p { font-size: 0.92rem; color: var(--text-muted); margin: 0; }
 
+/* Section headings on the projects index, separating research from coursework. */
+.section-head {
+  margin-top: 3.5rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 1.3rem;
+}
+.section-head:first-of-type { margin-top: 1rem; }
+.section-note { color: var(--text-muted); font-size: 0.93rem; margin-top: 0.8em; }
+
+/* Marks a page as coursework rather than research, so the two never blur. */
+.course-badge {
+  display: inline-block;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 4px 12px;
+  margin-bottom: 1.2rem;
+}
+
 /* ------------------------------------------------------- project pages -- */
 
 .prose { max-width: 800px; margin: 0 auto; }
@@ -508,6 +532,29 @@ main { padding: 56px 0 80px; }
   .data-table { font-size: 0.82rem; }
   .data-table th, .data-table td { padding-right: 8px; }
 }
+
+/* ------------------------------------------------------ portrait video -- */
+
+/* The course demos are YouTube Shorts (9:16). A 16:9 frame would leave most of
+   the width empty, so they get their own narrow portrait container. */
+.video-embed-portrait {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  max-width: 340px;
+  margin: 0 auto;
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.video-embed-portrait iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.video-vertical figcaption { text-align: center; }
 
 /* -------------------------------------------------------------- footer -- */
 

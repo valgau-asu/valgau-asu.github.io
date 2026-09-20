@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM-Driven Pick and Place — Valentin Gaucher</title>
+<meta name="description" content="Course project: natural-language control of a Dobot Magician arm, with Google Gemini function calling orchestrating perception, planning and execution.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="projects.html" aria-current="page">Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="media.html">Talks &amp; Media</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="projects.html">&larr; Projects</a></p>
+
+    <p class="course-badge">Course project &middot; RAS 545 &middot; Arizona State University &middot; Spring 2026</p>
+    <h1>LLM-driven pick and place with a 4-DOF manipulator</h1>
+    <p class="project-meta">
+      Plain-English commands drive a Dobot Magician arm, with Gemini function calling
+      orchestrating perception, planning and execution.
+    </p>
+
+    <figure class="fig video-vertical">
+      <div class="video-embed-portrait">
+        <iframe src="https://www.youtube-nocookie.com/embed/hCylxk1QtvU"
+                title="RAS 545 Project 2: LLM-driven pick and place with a Dobot arm"
+                allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
+                allowfullscreen loading="lazy"></iframe>
+      </div>
+      <figcaption>Stacking and lateral placement commanded in natural language.</figcaption>
+    </figure>
+
+    <h2>The task</h2>
+    <p>
+      Given a workspace of coloured blocks, a user types something like
+      <em>&ldquo;place blue on top of green&rdquo;</em> or <em>&ldquo;move red to the left of
+      blue&rdquo;</em>, and the system has to resolve the reference, work out where things are,
+      and execute a multi-step manipulation. The interesting part is that the language model
+      is not generating code or text for a human &mdash; it is the <strong>controller</strong>.
+    </p>
+
+    <h2>How function calling changes the architecture</h2>
+    <p>
+      Gemini is given a set of <code>FunctionDeclaration</code> schemas &mdash; each a name, a
+      description and typed parameters &mdash; and selects which to invoke from the conversation
+      context. The runtime dispatches the call, returns the result as a tool response, and the
+      model either issues further calls or answers. That turns the model from a text generator
+      into a reasoning agent in closed loop with hardware.
+    </p>
+    <p>Five components hang off that loop:</p>
+    <ul>
+      <li><strong>LLM controller</strong> — initialises the client, registers tool schemas, manages conversation history, dispatches calls.</li>
+      <li><strong>Tool dispatcher</strong> — maps emitted function names to Python implementations.</li>
+      <li><strong>Camera capture</strong> — runs HSV block detection, labels each block (<code>red1</code>, <code>blue2</code>), saves an annotated frame plus JSON of labels and centroids.</li>
+      <li><strong>Robot motion</strong> — connect, home, move to Cartesian poses, move to pixel-derived positions through the affine transform, drive the suction gripper.</li>
+      <li><strong>Pick and place</strong> — given source label, target label and placement type, computes safe approach heights and sequences the motion.</li>
+    </ul>
+
+    <h2>Perception</h2>
+    <p>
+      Blocks are found by converting each frame to HSV and applying per-colour masks for blue,
+      green, yellow and red. Red needs <em>two</em> intervals because its hue wraps around the
+      HSV cylinder &mdash; a standard trap worth stating explicitly. Masks get morphological
+      opening and closing with a \(5\times5\) kernel, contours are filtered by area
+      (\(A_{\min} = 500\) px²), and image moments give each centroid.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/ras545/llm-scene.jpg" alt="Annotated camera view of the workspace with coloured blocks detected and labelled." width="1000" height="746">
+      <figcaption>Camera output from the request &ldquo;Understand the scene&rdquo;, with each block detected and labelled.</figcaption>
+    </figure>
+
+    <h2>Geometry</h2>
+    <p>
+      Pixel centroids become robot coordinates through the same affine calibration developed
+      in <a href="project-maze-solver.html">the maze project</a>:
+    </p>
+    \[ \mathbf{M} = \begin{pmatrix} 6.007\times10^{-3} & -4.842\times10^{-1} & 3.807\times10^{2} \\ -4.691\times10^{-1} & 3.750\times10^{-3} & 1.553\times10^{2} \end{pmatrix} \]
+    <p>
+      Heights are computed from the table contact height and block geometry rather than
+      guessed: \(z_{\text{table}} = -45\) mm, safe travel height \(z_{\text{above}} = 100\) mm,
+      block thickness \(h_{\text{block}} = 40\) mm, and \(\delta_{\text{stack}} = 10\) mm of
+      clearance when stacking. So placing one block on another targets
+      \(z = -45 + 80 + 10 = 45\) mm.
+    </p>
+
+    <h2>Results</h2>
+    <p>
+      Asked to <em>&ldquo;understand the scene&rdquo;</em>, the model called
+      <code>move_to_home()</code> to clear the camera's field of view, then
+      <code>capture_scene_with_detection()</code>, and summarised the blocks it found with
+      their pixel coordinates before asking what to move &mdash; the sequence the system prompt
+      specifies, chosen by the model rather than hard-coded.
+    </p>
+    <p>
+      Both manipulation classes worked. <strong>Stacking</strong>: &ldquo;place blue1 on top of
+      green1&rdquo; produced a <code>pick_and_place_block</code> call with
+      <code>placement_type="on_top"</code>, and the arm picked, travelled at the safe height,
+      descended to the computed 45 mm stack height, released suction and retracted.
+      <strong>Lateral placement</strong>: &ldquo;place red1 to the right of green1&rdquo;
+      resolved the spatial reference and applied the corresponding offset.
+    </p>
+
+    <h2>What it demonstrates</h2>
+    <ul>
+      <li>Function calling as a robot control interface, not just a text feature — the model chooses tools and sequences them.</li>
+      <li>Natural-language spatial references (&ldquo;on top of&rdquo;, &ldquo;to the right of&rdquo;) resolved into calibrated metric offsets.</li>
+      <li>Reuse of the hand&ndash;eye calibration from the maze project, so the geometry was solved once and shared.</li>
+    </ul>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

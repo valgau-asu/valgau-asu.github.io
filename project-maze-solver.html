@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vision-Based Maze Solving — Valentin Gaucher</title>
+<meta name="description" content="Course project: a Dobot Magician 4-DOF arm solves a printed maze from an overhead camera, using affine hand-eye calibration, perspective rectification and BFS path planning.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="projects.html" aria-current="page">Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="media.html">Talks &amp; Media</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="projects.html">&larr; Projects</a></p>
+
+    <p class="course-badge">Course project &middot; RAS 545 &middot; Arizona State University &middot; Spring 2026</p>
+    <h1>Vision-based maze solving with a 4-DOF manipulator</h1>
+    <p class="project-meta">
+      A Dobot Magician arm reads a printed maze through an overhead camera and draws
+      the solution path.
+    </p>
+
+    <figure class="fig video-vertical">
+      <div class="video-embed-portrait">
+        <iframe src="https://www.youtube-nocookie.com/embed/IbocXOF_1cs"
+                title="RAS 545 Project 1: vision-based maze solving with a Dobot arm"
+                allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
+                allowfullscreen loading="lazy"></iframe>
+      </div>
+      <figcaption>The arm executing the solved path on the physical maze.</figcaption>
+    </figure>
+
+    <h2>The task</h2>
+    <p>
+      Two coupled problems. First, <strong>hand&ndash;eye calibration</strong>: recover the
+      mapping between camera pixels and the robot's workspace. Second, a
+      <strong>perception pipeline</strong> that finds the maze, works out a route through it,
+      and hands the result back in robot coordinates for execution.
+    </p>
+    <p class="note">
+      Background: robotic maze solving goes back to the Micromouse competitions of the late
+      1970s, where small autonomous robots map and run a maze as fast as possible. Advanced
+      micromice use Flood Fill, but the underlying logic is unweighted graph traversal &mdash;
+      which is what this project uses. Veritasium has
+      <a href="https://www.youtube.com/watch?v=ZMQbHMgK2rw">a good history of the competition</a>.
+    </p>
+
+    <h2>Calibration</h2>
+    <p>
+      Eight pixel&ndash;robot correspondences were collected by clicking features in the camera
+      frame and driving the end-effector to the same physical point. An affine matrix
+      \(\mathbf{M}\) is fitted with OpenCV's <code>estimateAffine2D</code>.
+    </p>
+    <p>
+      The interesting result is the model comparison. The <em>partial</em> affine model
+      (similarity: rotation, uniform scale, translation) failed badly &mdash; mean reprojection
+      error <strong>65.7 mm</strong>, max 201.5 mm, with RANSAC discarding half the
+      correspondences as outliers. The <em>full</em> affine model, with all six degrees of
+      freedom, gave mean error <strong>1.34 mm</strong> and max 4.83 mm, retaining every point.
+    </p>
+    <table class="data-table">
+      <caption>Reprojection error by transformation model.</caption>
+      <thead><tr><th>Model</th><th>Mean error</th><th>Max error</th><th>Inliers</th></tr></thead>
+      <tbody>
+        <tr><td>Partial affine (similarity)</td><td>65.7 mm</td><td>201.5 mm</td><td>4 / 8</td></tr>
+        <tr class="row-ours"><td>Full affine (6 DOF)</td><td><strong>1.34 mm</strong></td><td>4.83 mm</td><td>8 / 8</td></tr>
+      </tbody>
+    </table>
+    <p>
+      The gap says something physical: a similarity transform cannot represent the setup
+      because the camera's optical axis is not exactly perpendicular to the table, which
+      introduces non-uniform scaling. The extra two degrees of freedom absorb it.
+    </p>
+    \[ \mathbf{M} = \begin{pmatrix} 0.00896 & -0.31200 & 365.553 \\ -0.30566 & 0.01009 & 111.621 \end{pmatrix} \]
+
+    <h2>The perception pipeline</h2>
+    <p>
+      Six stages take a raw frame to an executable path.
+    </p>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/ras545/maze-camera_capture.jpg" alt="Raw overhead camera frame showing the printed maze on a dark background." width="900" height="675">
+      <img src="pictures/projects/ras545/maze-maze_corners_overlay.jpg" alt="The same frame with the detected maze boundary and its four corners marked." width="900" height="675">
+      <figcaption><strong>1&ndash;2.</strong> Raw capture, then the maze boundary found as the largest quadrilateral in the thresholded image, with corners ordered consistently.</figcaption>
+    </figure>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/ras545/maze-maze_warp.jpg" alt="The maze after perspective rectification, axis-aligned and filling the frame." width="900" height="875">
+      <img src="pictures/projects/ras545/maze-walls_mask.png" alt="Binary mask isolating the maze walls." width="900" height="875">
+      <figcaption><strong>3&ndash;4.</strong> Perspective rectification puts the maze corners on the image corners, which makes the grid discretisation trivial. Walls are then isolated as a binary mask.</figcaption>
+    </figure>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/ras545/maze-grid_overlay_annot.jpg" alt="Occupancy grid overlaid on the rectified maze, with cells marked free or blocked." width="900" height="875">
+      <img src="pictures/projects/ras545/maze-solution_overlay.jpg" alt="The BFS solution path drawn through the occupancy grid." width="900" height="875">
+      <figcaption><strong>5&ndash;6.</strong> The workspace becomes an occupancy grid; breadth-first search returns a collision-free path from the red start marker to the green end marker.</figcaption>
+    </figure>
+
+    <figure class="fig">
+      <img src="pictures/projects/ras545/maze-original_with_path.jpg" alt="The solved path projected back onto the original camera frame." width="900" height="675">
+      <figcaption>The path projected back into camera coordinates, then through \(\mathbf{M}\) into robot coordinates for execution.</figcaption>
+    </figure>
+
+    <h2>Why BFS</h2>
+    <p>
+      On an unweighted occupancy grid every move costs the same, so breadth-first search
+      returns a shortest path by construction &mdash; no heuristic to tune and no risk of a
+      badly chosen one making the result suboptimal. For a grid this size the cost is
+      irrelevant, so the simplest correct algorithm wins.
+    </p>
+
+    <h2>Outcome</h2>
+    <p>
+      The full pipeline solves a physical maze end to end, with the reconstructed path
+      matching the intended traversal from the red start marker to the green end marker,
+      and the arm tracing it on the table.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
