@@ -229,9 +229,8 @@ main { padding: 56px 0 80px; }
 }
 
 /* Affiliation logos ------------------------------------------------------
-   Stacked under the photo: ASU and ISAE-SUPAERO at full column width,
-   then JPL at two thirds, centred.
-   All three are pure white art on a transparent background. */
+   Stacked under the photo: ASU, then ISAE-SUPAERO, matched on width.
+   Both are pure white art on a transparent background. */
 
 .logo-asu,
 .logo-isae {
@@ -239,38 +238,26 @@ main { padding: 56px 0 80px; }
   height: auto;
 }
 
-/* JPL sits at two thirds of the others' width, centred in the column. */
-.logo-jpl {
-  width: 119px;                    /* 66% of 180px */
-  height: auto;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
 
 /* White art would be invisible on the light page, so both are knocked down to
    a grey close to the body text. Left untouched in dark mode, where white is
    exactly what the background needs. */
 .logo-asu,
-.logo-isae,
-.logo-jpl { filter: brightness(0.35); }
+.logo-isae { filter: brightness(0.35); }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .logo-asu,
-  :root:not([data-theme="light"]) .logo-isae,
-  :root:not([data-theme="light"]) .logo-jpl { filter: none; }
+  :root:not([data-theme="light"]) .logo-isae { filter: none; }
 }
 
 :root[data-theme="dark"] .logo-asu,
-:root[data-theme="dark"] .logo-isae,
-:root[data-theme="dark"] .logo-jpl { filter: none; }
+:root[data-theme="dark"] .logo-isae { filter: none; }
 
 @media (max-width: 640px) {
   .hero { grid-template-columns: 1fr; gap: 24px; }
   .hero-photo { width: 140px; height: 140px; }
   .hero-aside { width: 140px; }
   .logo-asu, .logo-isae { width: 140px; }
-  .logo-jpl { width: 92px; }       /* 66% of 140px */
 }
 
 /* --------------------------------------------------------------- links -- */
