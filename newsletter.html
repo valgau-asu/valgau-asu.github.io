@@ -6,11 +6,11 @@
 try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Newsletter — Valentin Gaucher</title>
-<meta name="description" content="Short write-ups on aerial robotics news, connected to my own research. First: what actually broke Ingenuity on its final flight.">
+<meta name="description" content="Short write-ups on aerial robotics news, connected to my own research on landing, contact and control.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=4">
+<link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
 
@@ -31,7 +31,7 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
 </header>
 
 <main>
-  <div class="wrap prose">
+  <div class="wrap">
 
     <div class="page-intro">
       <h1>Newsletter</h1>
@@ -41,138 +41,30 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
       </p>
     </div>
 
-    <article class="post">
-      <p class="post-date">Ingenuity &middot; Flight 72</p>
-      <h2 class="post-title">What actually broke Ingenuity</h2>
+    <div class="card-grid">
 
-      <figure class="fig fig-wide">
-        <img src="pictures/newsletter/ingenuity-hard-landing.jpg" alt="NASA graphic of Ingenuity's hard landing, showing four stages: poor visual navigation, high roll rates at ground contact, blade tips failing from gyroscopic forces, and rotor imbalance causing blade ejection." width="1500" height="873">
-        <figcaption>
-          The most likely sequence for the hard landing, as reconstructed by JPL and
-          AeroVironment. Credit: NASA/JPL-Caltech.
-        </figcaption>
-      </figure>
+      <article class="card">
+        <img class="card-thumb" src="pictures/newsletter/thumb-ingenuity.jpg" alt="NASA graphic reconstructing Ingenuity's hard landing in four stages">
+        <div class="card-body">
+          <p class="post-date">January 2024 &middot; Ingenuity, Flight 72</p>
+          <h3><a href="post-ingenuity-hard-landing.html">What actually broke Ingenuity</a></h3>
+          <p>
+            JPL&rsquo;s reconstruction of the final flight reads as a blade failure, but the
+            chain starts earlier &mdash; with a state estimate that degraded over featureless
+            sand. Why gyroscopic precession finished the job, and where the accident meets my
+            own work on landing and contact.
+          </p>
+          <ul class="tags">
+            <li>Mars</li>
+            <li>State estimation</li>
+            <li>Landing</li>
+            <li>NASA JPL</li>
+          </ul>
+        </div>
+      </article>
 
-      <p>
-        On 18 January 2024, Ingenuity flew for the seventy-second and last time. The plan was
-        modest: a short vertical hop to check the flight systems and photograph the
-        surroundings. The telemetry shows it did exactly that &mdash; climbing to 12 metres,
-        hovering, taking its pictures. It began descending 19 seconds in. By 32 seconds it was
-        back on the surface and had stopped talking to Earth.
-      </p>
-      <p>
-        What makes the failure worth studying is that nothing exotic went wrong. Engineers at
-        JPL and AeroVironment traced it to a chain in which each step is unremarkable on its
-        own.
-      </p>
+    </div>
 
-      <ol class="chain">
-        <li>
-          <strong>The ground gave the navigation system nothing to hold onto.</strong>
-          Ingenuity tracked features on the surface to estimate its own motion. Over
-          featureless, rippled sand there were no features to track.
-        </li>
-        <li>
-          <strong>So it arrived moving sideways.</strong> Without a good velocity estimate, the
-          helicopter touched down carrying significant horizontal speed &mdash; onto the slope
-          of a sand ripple, which turned that speed into pitch and roll.
-        </li>
-        <li>
-          <strong>The attitude change loaded the blades beyond design.</strong> Rotors spinning
-          at flight speed resist being tilted, and that resistance becomes force in the blade.
-          All four snapped at their weakest point, roughly a third of the way in from the tip.
-        </li>
-        <li>
-          <strong>The rest followed mechanically.</strong> Four damaged blades meant a violently
-          unbalanced rotor; the vibration tore what remained of one blade out at the root, and
-          the power that imbalance demanded ended the radio link.
-        </li>
-      </ol>
-
-      <p>
-        Read in that order, the failure is not really about blades. It is about a
-        <em>state estimate</em> that degraded where the terrain offered no texture, and a
-        touchdown that happened before anything could correct for it.
-      </p>
-
-      <h3>Why the blades broke: precession</h3>
-      <p>
-        Step three is the one that feels counter-intuitive, and it is worth seeing rather than
-        reading. A spinning rotor does not respond to a tilting force the way a stationary
-        object does &mdash; the response appears ninety degrees around the disc, and resisting
-        it puts bending loads into the blade itself. That is gyroscopic precession, and it is
-        why a rapid attitude change on touchdown is far more dangerous to a fast-spinning rotor
-        than the impact alone would suggest.
-      </p>
-
-      <figure class="fig">
-        <video controls loop playsinline preload="metadata" width="960" height="540">
-          <source src="videos/newsletter-precession.mp4" type="video/mp4">
-          Your browser does not support embedded video.
-        </video>
-        <figcaption>
-          Gyroscopic precession &mdash; why a spinning rotor fights being tilted.
-          Clip from Veritasium&rsquo;s
-          <a href="https://www.youtube.com/watch?v=20vUNgRdB4o">video on Ingenuity</a>.
-        </figcaption>
-      </figure>
-
-      <h3>Where this meets my own work</h3>
-      <p>
-        This accident sits squarely on the questions I spend my time on, which is why I wanted
-        to write it up rather than just read it.
-      </p>
-      <p>
-        The failure happened in the <strong>last two seconds of a landing</strong> &mdash; the
-        regime where ground proximity changes the aerodynamics and where a controller has the
-        least time to react. My work on
-        <a href="project-neural-mpc.html">neural MPC under ground effect</a> targets exactly
-        that window: learning how delivered thrust changes near a surface so the controller can
-        anticipate it rather than discover it on the way down.
-      </p>
-      <p>
-        The consequence &mdash; an attitude excursion triggered by contact &mdash; is the
-        subject of my work on
-        <a href="project-dual-quaternion.html">collision recovery</a>, which models the
-        instantaneous velocity jump at impact and designs the recovery around it instead of
-        treating contact as a fault to be avoided.
-      </p>
-      <p>
-        And the broader lesson &mdash; that touching down on an unprepared planetary surface is
-        the risky part &mdash; is precisely the premise of
-        <a href="project-mahd.html">Mid-Air Helicopter Deployment</a>, the architecture I
-        worked on at NASA JPL. MAHD exists because arriving at the surface under your own rotors
-        is where things go wrong, so a jetpack carries the vehicle to a controlled near-hover
-        first.
-      </p>
-
-      <figure class="fig">
-        <video controls loop playsinline preload="metadata" width="960" height="540">
-          <source src="videos/newsletter-mahd.mp4" type="video/mp4">
-          Your browser does not support embedded video.
-        </video>
-        <figcaption>
-          MAHD explained in the same video, from
-          <a href="https://www.youtube.com/watch?v=20vUNgRdB4o&amp;t=1642s">27:22</a>.
-          Clip from Veritasium.
-        </figcaption>
-      </figure>
-
-      <p class="note">
-        Ingenuity was built by NASA JPL, which manages the project for NASA Headquarters, with
-        flight-performance analysis from NASA Ames and NASA Langley, and design and components
-        from AeroVironment, Qualcomm and SolAero. Lockheed Martin Space built the Mars
-        Helicopter Delivery System. A full technical report on the final flight is being
-        published by the agency.
-      </p>
-
-      <div class="pub-links">
-        <a href="https://www.jpl.nasa.gov/images/pia26482-ingenuitys-hard-landing/">NASA JPL &mdash; Ingenuity&rsquo;s hard landing</a>
-        <a href="https://www.youtube.com/watch?v=20vUNgRdB4o">Veritasium &mdash; the full video</a>
-      </div>
-    </article>
-
-  </div>
 </main>
 
 <footer class="site-footer">
