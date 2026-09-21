@@ -68,3 +68,16 @@
   paint();
   btn.classList.add('is-ready');
 })();
+
+// Click anywhere on a video to play or pause it. Chrome does this natively,
+// Safari does not — there you would have to hit the small play button.
+(function () {
+  Array.prototype.forEach.call(document.querySelectorAll('.fig video'), function (v) {
+    v.addEventListener('click', function (e) {
+      // Ignore clicks that land on the native control bar along the bottom.
+      if (e.offsetY > v.clientHeight - 45) return;
+      if (v.paused) { v.play(); } else { v.pause(); }
+    });
+    v.style.cursor = 'pointer';
+  });
+})();

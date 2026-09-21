@@ -1,92 +1,49 @@
-# Personal website — Valentin Gaucher
+# valgau-asu.github.io
 
-Plain HTML/CSS/JS. No build step, no dependencies. Edit a file, refresh the browser.
+My personal website. Plain HTML, CSS and JavaScript — no build step, no
+dependencies. Edit a file, refresh the browser.
 
-## Files
+Live at <https://valgau-asu.github.io>.
 
-```
-index.html          About / landing page
-experience.html     Research and engineering positions
-phd-research.html   PhD research project cards
-other-projects.html Coursework and earlier project cards
-project-*.html      Long-form project write-ups (KaTeX for equations).
-                    Coursework and earlier-work pages carry a badge so they
-                    are never mistaken for research.
-publications.html   Publication list
-css/style.css       All styling. Colors live in :root at the top.
-js/main.js          Mobile menu + footer year
-pictures/           Photo and project images
-pictures/logo/      Affiliation logos
-pictures/projects/  Figures for the project write-ups
-pdfs/               CV, papers, slides, BibTeX
-.nojekyll           Tells GitHub Pages to serve files as-is
-```
-
-## Preview locally (with live reload)
+## Local preview
 
 ```bash
-cd ~/Documents/Website && python3 dev.py
+python3 dev.py
 ```
 
-Open http://localhost:8000. Save any file and the browser refreshes itself —
-no need to hit reload. Ctrl-C in the terminal to stop.
+Serves <http://localhost:8000> and reloads the page whenever a file is saved.
+Development only — it injects the reload script as it serves, never on disk.
+Pass a port if 8000 is taken: `python3 dev.py 3000`.
 
-`dev.py` is a development tool only. It injects a small reload script into pages
-as it serves them; your files on disk are never modified, and GitHub Pages serves
-them plainly. Pass a port if 8000 is busy: `python3 dev.py 3000`.
+## Layout
 
-## Editing
-
-- **Text and links:** open the `.html` file and edit between the tags. Anything in
-  `[square brackets]` or named `YOUR_USERNAME` / `VIDEO_ID` is a placeholder to replace.
-- **Adding a project or paper:** each page has a commented block marked
-  `COPY THIS BLOCK` — duplicate it and fill it in.
-- **Equations** on the project pages are written as LaTeX between `\\(...\\)` (inline)
-  or `\\[...\\]` (display) and rendered by KaTeX, loaded from a CDN on those two
-  pages only. It is the site's one external dependency.
-- **The nav bar** is copied into all four top-level pages. If you add a page, add the link in
-  all five, and set `aria-current="page"` on the current page's own link.
-- **Light / dark theme:** the site follows the operating system by default. The
-  button in the header overrides that and stores the choice in `localStorage`,
-  applied via `data-theme` on `<html>`. Dark rules are written twice — once
-  under `prefers-color-scheme` guarded by `:not([data-theme="light"])`, once
-  under `[data-theme="dark"]` — so a new dark rule must be added in both places.
-
-- **If a CSS change does not show up:** GitHub Pages caches `style.css` for 10
-  minutes. Hard-refresh (⌘⇧R), or bump the version in the stylesheet link —
-  `css/style.css?v=2` becomes `?v=3` — in every page, which forces every visitor
-  to fetch the new file immediately.
-
-- **Colors and fonts:** the `:root` block at the top of `css/style.css`. Change
-  `--accent` to restyle the whole site. Dark mode is handled automatically.
-
-## Images
-
-Replace the `.svg` placeholders with real images and update the `src` in the HTML:
-
-- `profile` — the hero photo; portrait is fine, CSS crops it to a square
-- project thumbnails — 16:9, around 800×450
-- Keep files under ~500 KB so pages stay fast.
-
-Once you have a real profile photo, also point `og:image` in `index.html` at it
-using a full URL (`https://YOUR_USERNAME.github.io/assets/img/profile.jpg`) — that
-is what shows when someone shares your link.
-
-## Deploying to GitHub Pages
-
-1. Create a repo on GitHub named exactly **`YOUR_USERNAME.github.io`** (public).
-2. Then, from this folder:
-
-```bash
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_USERNAME.github.io.git
-git branch -M main
-git push -u origin main
+```
+index.html           About
+experience.html      Positions
+phd-research.html    PhD project cards
+other-projects.html  Coursework and earlier project cards
+publications.html    Publications
+newsletter.html      Newsletter index
+project-*.html       Project write-ups
+post-*.html          Newsletter posts
+css/style.css        All styling; colors in :root
+js/main.js           Menu, theme toggle, footer year, click-to-play video
+pictures/  pdfs/  videos/
 ```
 
-3. On GitHub: **Settings → Pages → Source: Deploy from a branch → `main` / `(root)`**.
-4. Your site appears at `https://YOUR_USERNAME.github.io` within a minute or two.
+## Conventions
 
-Afterwards, publishing changes is just:
+- The nav bar is duplicated in every page. Adding a page means adding the link
+  everywhere and setting `aria-current="page"` on its own entry.
+- Dark mode rules are written twice: under `prefers-color-scheme` guarded by
+  `:not([data-theme="light"])`, and under `[data-theme="dark"]` for the toggle.
+  A new dark rule needs both.
+- After changing `css/style.css`, bump `?v=N` on the stylesheet link in every
+  page. GitHub Pages caches it for ten minutes otherwise.
+- Equations use KaTeX from a CDN, loaded only on the pages that need it.
+  It is the site's one external dependency.
+
+## Publish
 
 ```bash
 git add -A && git commit -m "Update site" && git push
