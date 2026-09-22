@@ -10,7 +10,7 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=5">
+<link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body>
 
@@ -42,8 +42,8 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
 
     <h2 class="section-head">Coursework &mdash; Arizona State University</h2>
     <p class="section-note">
-      Graduate coursework at ASU. Both built on a Dobot Magician 4-DOF arm with an
-      overhead camera.
+      Graduate coursework at ASU. The two RAS 545 projects are built on a Dobot Magician
+      4-DOF arm with an overhead camera; the RAS 557 project is a folded laminate jumper.
     </p>
 
     <div class="card-grid">
@@ -78,6 +78,24 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
             <li>LLM</li>
             <li>HSV segmentation</li>
             <li>RAS 545</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <img class="card-thumb" src="pictures/projects/thumb-foldable.jpg" alt="The folded five-layer laminate robot body with its leg segments labelled and the numbered spring attachment slots shown in close-up">
+        <div class="card-body">
+          <h3><a href="project-foldable-robotics.html">Flea-inspired foldable jumping robot</a></h3>
+          <p>
+            Where should a spring attach to a linkage to jump furthest? A MuJoCo grid search
+            answers it, a five-layer laminate prototype tests it, and motion capture says how
+            close the two came.
+          </p>
+          <ul class="tags">
+            <li>MuJoCo</li>
+            <li>Foldable robotics</li>
+            <li>Motion capture</li>
+            <li>RAS 557</li>
           </ul>
         </div>
       </article>

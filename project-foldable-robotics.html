@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>/* Apply a stored theme before first paint so the page never flashes. */
+try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foldable Jumping Robot — Valentin Gaucher</title>
+<meta name="description" content="Course project: a flea-inspired foldable jumping robot, combining a MuJoCo optimisation of the spring attachment geometry with a five-layer laminate prototype and motion-capture validation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=6">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="phd-research.html">PhD Research</a></li>
+      <li><a href="other-projects.html" aria-current="page">Other Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="newsletter.html">Newsletter</a></li>
+    </ul>
+    <button class="theme-toggle" type="button" aria-label="Switch theme"></button>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="other-projects.html">&larr; Other Projects</a></p>
+
+    <p class="course-badge">Course project &middot; RAS 557 Foldable Robotics &middot; Arizona State University</p>
+    <h1>A flea-inspired foldable jumping robot</h1>
+    <p class="project-meta">
+      Optimising where a spring attaches to a linkage in simulation, then folding that
+      linkage out of a five-layer laminate and measuring what it actually does.
+      With Amirali Abazari and Jake Strube.
+    </p>
+    <div class="pub-links">
+      <a href="pdfs/AbazariGaucherStrube_RAS557_FoldableRobotics.pdf" target="_blank" rel="noopener">Report (PDF)</a>
+      <a href="https://foldrobfinalabazarigaucherstrube.edgeone.dev" target="_blank" rel="noopener">Project website</a>
+      <a href="https://youtu.be/GWAMmjKtZHU" target="_blank" rel="noopener">Video</a>
+    </div>
+
+    <figure class="fig video-embed-wrap">
+      <div class="video-embed">
+        <iframe src="https://www.youtube-nocookie.com/embed/GWAMmjKtZHU?rel=0"
+                title="RAS 557 final project: bio-inspired foldable jumping flea robot"
+                allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
+                allowfullscreen loading="lazy"></iframe>
+      </div>
+      <figcaption>The project video: fabrication, the jumping mechanism, and the passive jump tests.</figcaption>
+    </figure>
+
+    <h2>Why a flea</h2>
+    <p>
+      At small scale, muscle cannot produce the acceleration a ballistic jump needs. Fleas
+      get around that with <strong>latch-mediated spring actuation</strong>: the muscle
+      contracts slowly to load a resilin pad in the thorax, a mechanical latch holds the
+      animal in that high-energy state, and releasing the latch dumps the stored energy in
+      milliseconds. Power production is decoupled from power release, so takeoff speed is set
+      by the spring rather than by how fast the muscle can shorten &mdash; 1.3 to 1.9 m/s in
+      the animal, with the body rotation during flight governed mostly by leg geometry rather
+      than by active control.
+    </p>
+    <p>
+      That last point is what makes it a foldable-robotics problem. At the gram scale you
+      cannot afford motors and high-bandwidth feedback, so behaviour has to be designed into
+      the structure. The question we took on was narrow and testable: <strong>where should the
+      spring attach to the linkage to maximise jump distance</strong>, and does a folded
+      laminate built to that answer behave the way the simulation says?
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/foldable/fig06.png" alt="Schematic of the flea leg abstracted into linkages: coxa as a parallelogram four-bar, trochanter, femur, tibia and tarsus, with the spring drawn between the coxa and femur and segment lengths annotated." width="1200" height="580">
+      <figcaption>
+        The biological leg reduced to a planar linkage: a coxa parallelogram, a rigid
+        trochanter, then femur and tibia&ndash;tarsus. The spring (dashed) spans the coxa and
+        the femur &mdash; its two attachment points are the design variables.
+      </figcaption>
+    </figure>
+
+    <h2>The simulation model</h2>
+    <p>
+      The model is a planar rigid-body simulation in MuJoCo, constrained to the \(x\)&ndash;\(z\)
+      plane. A floating trunk carries the leg chain: coxa, trochanter, femur, tibia&ndash;tarsus.
+      The coxa is a four-bar parallelogram with
+      \(L_1 = L_3 = 0.04\,\text{m}\) and \(L_2 = L_0 = 0.02\,\text{m}\), which is the
+      part that matters mechanically &mdash; a parallelogram holds the trochanter at a fixed
+      orientation relative to the trunk as the leg extends, so the leg's extension angle is
+      decoupled from body pitch. The femur is \(L_5 = 0.04\,\text{m}\) and the
+      tibia \(L_6 = 0.05\,\text{m}\), joined by revolute joints with damped limits so the leg
+      cannot hyperextend in flight.
+    </p>
+    <p>
+      The tarsus is modelled as a single point with friction \(\mu = 0.99\). That is
+      deliberate: in the animal the tarsus is a gripping surface covered in hairs that anchors
+      the foot rather than pushing off it, so a high-friction point captures the behaviour
+      without modelling the contact patch.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/foldable/mujoco1.png" alt="Rendered MuJoCo model of the flea leg showing the capsule geometry of the coxa parallelogram, femur and tibia above a ground plane." width="1200" height="800">
+      <figcaption>The MuJoCo model. The leg is duplicated on a second rail for lateral stability.</figcaption>
+    </figure>
+
+    <p>
+      Energy storage is a massless linear tendon spanning the coxa and the femur. Rather than
+      simulate a muscle contracting, the release is approximated by shortening the tendon's
+      rest length instantaneously at \(t = 0\), which injects
+    </p>
+    \[ U = \tfrac{1}{2}k\,\delta^{2} \]
+    <p>
+      where \(k\) is the tendon stiffness and \(\delta\) the preload &mdash; the amount by
+      which the rest length is offset from the current length. In the model
+      \(k = 150\,\text{N/m}\), damping is \(0.5\,\text{N}\cdot\text{s/m}\) and
+      \(\delta = 0.07\). Integration runs for 2.0 s at a fixed \(10^{-4}\,\text{s}\) timestep.
+    </p>
+
+    <p class="code-label">Spring, as a MuJoCo tendon</p>
+<pre class="code"><code>&lt;tendon&gt;
+  &lt;spatial name="Palpha_Pbeta_spring"
+           stiffness="{k_spring}" damping="{d_spring}"
+           width="0.002" rgba="1 1 0 1"&gt;
+    &lt;site site="spring_coxa_site"/&gt;
+    &lt;site site="spring_femur_site"/&gt;
+  &lt;/spatial&gt;
+&lt;/tendon&gt;</code></pre>
+
+    <p class="code-label">Releasing the latch: offset the rest length, then re-solve</p>
+<pre class="code"><code>L_now = float(data.ten_length[spring_id])
+<span class="cmt"># stores energy 1/2 * k * delta^2</span>
+model.tendon_lengthspring[spring_id, 0] = L_now + delta
+model.tendon_lengthspring[spring_id, 1] = L_now + delta
+mujoco.mj_forward(model, data)   <span class="cmt"># update forces with the new rest length</span></code></pre>
+
+    <h3>Baseline behaviour</h3>
+    <p>
+      The jump separates cleanly into three phases: a propulsive stroke below roughly
+      \(t < 0.1\,\text{s}\), ballistic flight, and landing impact. The useful result from the
+      baseline run is that the coxa parallelogram does its job &mdash; it directs the ground
+      reaction force through the centre of mass, which suppresses the backward pitch that is
+      the usual failure mode for a single-leg jumper.
+    </p>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/foldable/xtraj.png" alt="Plot of forward position x against time, rising steeply during the propulsive stroke then continuing linearly through flight." width="1200" height="600">
+      <figcaption>Forward motion.</figcaption>
+    </figure>
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/foldable/ztraj.png" alt="Plot of altitude z against time showing a ballistic arc with a peak followed by descent." width="1200" height="600">
+      <figcaption>Altitude &mdash; a clean ballistic arc.</figcaption>
+    </figure>
+
+    <p>
+      The performance metric for everything that follows is net forward displacement of the
+      trunk, \(x_{\max}\). Distance rather than height, on the assumption that the animal is
+      trying to get somewhere.
+    </p>
+
+    <h2>Optimising the spring placement</h2>
+    <p>
+      How much of the stored energy reaches the ground depends on where the spring is
+      anchored, because the attachment points set the moment arm through the whole extension.
+      We defined two dimensionless variables: \(\alpha\) for the normalised position along the
+      coxa, \(\beta\) for the position along the femur, both in \([0.1, 1.0]\).
+    </p>
+    <p>
+      The search is deliberately unsophisticated &mdash; a nested grid sweep that rebuilds the
+      model XML for each pair, runs the forward dynamics and reads off \(x_{\max}\), followed
+      by a refined sweep around the winner to cut discretisation error. With a 2D parameter
+      space and a simulation this cheap, a grid search is the honest choice: it also shows you
+      the shape of the landscape, which a gradient method would not.
+    </p>
+
+    <p class="code-label">One evaluation</p>
+<pre class="code"><code>def simulate_jump(k_spring, alpha, beta, duration=2.0):
+    xml   = make_xml(alpha, beta, k_spring)
+    model = mujoco.MjModel.from_xml_string(xml)
+    data  = mujoco.MjData(model)
+    ...
+    while data.time &lt; duration:
+        mujoco.mj_step(model, data)
+        max_x = max(max_x, data.xipos[trunk_bid, 0])
+        max_z = max(max_z, data.xipos[trunk_bid, 2])
+    return max_z, max_x</code></pre>
+
+    <p class="code-label">Coarse sweep, then a refined sweep around the best point</p>
+<pre class="code"><code>alphas = np.linspace(0.1, 1.0, 20)
+betas  = np.linspace(0.1, 1.0, 20)
+for i, a in enumerate(alphas):
+    for j, b in enumerate(betas):
+        zmax, xmax = simulate_jump(k_spring, a, b, duration=0.5)
+        max_x_grid[i, j] = xmax
+
+i_x, j_x = np.unravel_index(np.argmax(max_x_grid), max_x_grid.shape)
+<span class="cmt"># coarse: alpha*=0.38, beta*=0.38, x_max=0.5671 m</span>
+
+alphas_opt = np.linspace(max(alphas[i_x] - 0.2, 0), min(alphas[i_x] + 0.2, 1), 20)
+betas_opt  = np.linspace(max(betas[j_x]  - 0.2, 0), min(betas[j_x]  + 0.2, 1), 20)
+<span class="cmt"># refined: alpha*=0.44, beta*=0.50, x_max=0.5729 m</span></code></pre>
+
+    <figure class="fig">
+      <img src="pictures/projects/foldable/optimization2.png" alt="Heatmap of maximum forward distance over the alpha-beta parameter space, showing a single broad bright region rather than several disconnected maxima." width="1200" height="1000">
+      <figcaption>
+        Forward distance over the \((\alpha, \beta)\) space. The response is convex &mdash; one
+        global optimum, not a field of local maxima, which is why the refinement step is
+        enough.
+      </figcaption>
+    </figure>
+
+    <p>
+      The refined optimum is
+    </p>
+    \[ \alpha^{*} = 0.44 \qquad \beta^{*} = 0.50 \]
+    <p>
+      giving a predicted forward distance of \(0.5729\,\text{m}\). The femoral attachment
+      lands exactly at the segment midpoint, which is the balance point between a long moment
+      arm and the angular velocity the joint has to reach.
+    </p>
+    <p>
+      A separate sweep of \(k\) on a logarithmic scale up to \(150\,\text{N/m}\) confirmed
+      that the chosen stiffness sits in a stable region rather than near a numerical
+      divergence.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/foldable/optimization-k.png" alt="Plot of maximum forward distance against spring stiffness k, rising monotonically and smoothly with no discontinuity." width="1200" height="700">
+      <figcaption>Stiffness sweep at the optimised attachment points.</figcaption>
+    </figure>
+
+    <h2>Building it</h2>
+    <p>
+      The prototype is a five-layer laminate, following the course's manufacturing workflow.
+      Two design revisions were cut in LibreCAD; the second adds the tarsus, which the first
+      omitted on the reasoning that the flea does not push off it &mdash; the point of adding
+      it back was friction at the contact, matching the high-\(\mu\) point in the model.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/foldable/01_fig_LibreCAD.png" alt="Two LibreCAD flat patterns for the five-layer foldable design, with the coxa, femur, tibia and tarsus regions labelled on each." width="1200" height="620">
+      <figcaption>Two revisions of the flat pattern, with the leg segments labelled.</figcaption>
+    </figure>
+
+    <p>
+      The coxa is folded as a four-bar closed with a T-lock. The femur and tibia are built as
+      triangular shell sections &mdash; the fold geometry is doing the work of a stiffener,
+      raising the second moment of area so the legs stay rigid under the release load. The
+      main body is also a four-bar with a T-lock, but it houses the motors and is not meant to
+      articulate.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/foldable/03_fig_Folded.jpg" alt="The folded robot body in green and yellow laminate, with numbered spring attachment slots visible on the coxa and femur." width="1200" height="650">
+      <figcaption>
+        The folded body. The numbered slots on the coxa and femur are the discrete spring
+        attachment points &mdash; the physical stand-in for \(\alpha\) and \(\beta\).
+      </figcaption>
+    </figure>
+
+    <p>
+      The spring is a piece of <strong>bistable metal tape</strong>. Its bistability is not
+      used here; what makes it useful is that cutting it to different lengths gives a tunable
+      stiffness from one material. Three 15 mm-wide straps at 8, 6 and 4 cm give soft, medium
+      and hard.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/foldable/04_fig_Spring.jpg" alt="Three lengths of bistable metal tape at left, and at right the tape installed as a spring across the coxa-femur joint with its fastening points circled." width="1200" height="620">
+      <figcaption>Three tape lengths give three stiffnesses; at right, one installed across the joint.</figcaption>
+    </figure>
+
+    <p>
+      The latch is a ratchet rack and pinion. A servo turns the pinion, which pulls the rack
+      and closes the coxa&ndash;femur joint against the spring. The pinion is only toothed over
+      \(180^{\circ}\), so half a revolution later the rack runs off the teeth and releases &mdash;
+      that is the latch function, done geometrically rather than with a separate mechanism. A
+      vertical slider converts the rack's linear travel into the joint's combined rotation and
+      translation, and back again when the spring drives it.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/foldable/05_fig_Drive.jpg" alt="The 3D-printed ratchet pinion and rack at right, and the SolidWorks model of the same mechanism installed in the leg at left." width="1200" height="600">
+      <figcaption>The 180&deg; ratchet pinion and rack: a latch made out of missing teeth.</figcaption>
+    </figure>
+
+    <figure class="fig">
+      <img src="pictures/projects/foldable/06_fig_FinalFab.jpg" alt="Two views of the completed robot with servos, ratchet racks, pinion and vertical slider installed on the folded laminate body." width="1200" height="400">
+      <figcaption>
+        The complete robot, 72 g with the full drive train against 25 g for the bare folded
+        body.
+      </figcaption>
+    </figure>
+
+    <h2>What actually happened</h2>
+    <p>
+      The drive train did not work. Even with the soft spring fitted, the servos could not pull
+      the rack back far enough to load the joint &mdash; the minimum stiffness needed to launch
+      the body at all was above what two <em>Tower Pro SG90</em> servos could overcome. That is
+      the honest headline result, and it is a mass-and-torque problem rather than a design
+      error in the linkage: the drive train that loads the spring is nearly three times the
+      mass of the structure it is trying to launch.
+    </p>
+    <p>
+      So the jump itself was characterised passively: the tibia braced against a fixed mass,
+      the joint closed by hand, and released. That isolates exactly the thing the simulation
+      predicts &mdash; what the linkage and spring do with stored energy &mdash; from the
+      question of what loads the spring.
+    </p>
+    <p>
+      Trajectories were recorded with an <strong>OptiTrack</strong> motion capture system at
+      120 Hz. Each take was exported separately and cleaned, which was necessary because hands
+      in the workspace occluded the markers during loading. The three tracking markers weigh
+      19 g, close enough to the two servos they replaced that the jumping mass stays
+      representative.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/foldable/08_fig_mocap-compare.png" alt="Motion capture results comparing forward and vertical displacement over time for low, medium and high stiffness springs." width="1200" height="620">
+      <figcaption>
+        Passive jumps with the three tape stiffnesses, forward and vertical.
+      </figcaption>
+    </figure>
+
+    <p>
+      The soft spring barely moves the body in either direction. Medium and hard both throw it
+      a useful distance and reach relative heights of around 8 cm, and the stiffer the joint,
+      the higher the initial velocity in both axes. Three stiffness values is too coarse to
+      claim an optimum &mdash; finding the compromise between distance and height needs a
+      denser sweep than three cut lengths of tape.
+    </p>
+
+    <h3>Simulation against reality</h3>
+    <figure class="fig">
+      <img src="pictures/projects/foldable/sim2real.png" alt="Comparison plot of the MuJoCo prediction against the measured low-stiffness jump, for vertical and forward motion." width="1200" height="620">
+      <figcaption>The low-stiffness jump against the MuJoCo prediction.</figcaption>
+    </figure>
+
+    <p>
+      Vertically, takeoff and landing timing line up well, though the height does not &mdash;
+      closing that gap needs the mass and inertia distribution to be modelled more carefully
+      than a first pass does. The forward motion matches in trend, which is the part that
+      matters here, since forward distance is what the optimisation was maximising. The model
+      captures the forward dynamics well enough for the \((\alpha, \beta)\) result to mean
+      something physically.
+    </p>
+
+    <h2>What I would do next</h2>
+    <p>
+      The obvious hardware change is to replace the discrete attachment slots with a
+      <strong>continuous sliding rail</strong>. Right now \(\alpha\) and \(\beta\) are
+      quantised by where the holes are, so the physical robot cannot actually be set to the
+      optimum the simulation found. A rail makes the parameter continuous and lets you tune on
+      hardware instead of only in simulation.
+    </p>
+    <p>
+      It also opens up something more interesting: if \(\alpha\) and \(\beta\) can be set
+      before each release, a single spring of fixed stiffness gives a whole range of jump
+      behaviours. The geometry becomes the control input &mdash; which is the same
+      mechanics-first idea the project started from, used deliberately rather than as a
+      constraint.
+    </p>
+
+    <p class="note">
+      Team project with Amirali Abazari and Jake Strube for RAS 557 Foldable Robotics at
+      Arizona State University. My contribution was the MuJoCo model and the spring-placement
+      optimisation. The full write-up is in the
+      <a href="pdfs/AbazariGaucherStrube_RAS557_FoldableRobotics.pdf" target="_blank" rel="noopener">report</a>,
+      and we also built a
+      <a href="https://foldrobfinalabazarigaucherstrube.edgeone.dev" target="_blank" rel="noopener">project website</a>
+      for the course.
+    </p>
+
+    <div class="pub-links">
+      <a href="pdfs/AbazariGaucherStrube_RAS557_FoldableRobotics.pdf" target="_blank" rel="noopener">Report (PDF)</a>
+      <a href="https://foldrobfinalabazarigaucherstrube.edgeone.dev" target="_blank" rel="noopener">Project website</a>
+      <a href="https://youtu.be/GWAMmjKtZHU" target="_blank" rel="noopener">Video</a>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>&copy; <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js?v=2"></script>
+</body>
+</html>

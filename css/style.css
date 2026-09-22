@@ -669,3 +669,27 @@ main { padding: 56px 0 80px; }
 .site-footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .site-footer a { color: var(--text-muted); border: 0; }
 .site-footer a:hover { color: var(--accent); }
+
+/* Code listings on project pages. Colors come from the tokens, so dark mode
+   follows automatically and needs no second rule. */
+pre.code {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin: 1.6rem 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  -webkit-overflow-scrolling: touch;
+}
+pre.code code { font-family: inherit; font-size: inherit; }
+pre.code .cmt { color: var(--text-faint); }
+.code-label {
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 1.6rem 0 -1.1rem;
+}
