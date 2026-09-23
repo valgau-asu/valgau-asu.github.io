@@ -41,11 +41,12 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
     </p>
 
     <p class="callout">
-      <strong>This page covers the concept and motivation only.</strong> The experimental
-      results are part of a journal article currently under review, so no measurements,
-      figures or findings from it appear here. What follows is the context: what MAHD is,
-      why the takeoff transition is the hard part, and why it has to be tested rather than
-      simulated.
+      <strong>This page covers the concept and motivation.</strong> The quantitative results
+      are part of a journal article currently under review, so no measurements or numerical
+      findings from it appear here. What follows is the context &mdash; what MAHD is, why the
+      takeoff transition is the hard part, and why it has to be tested rather than simulated
+      &mdash; closing with the release imagery, which shows the difference plainly enough
+      without them.
     </p>
 
     <h2>The problem MAHD solves</h2>
@@ -159,6 +160,42 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
       rotorcraft spins up, trims thrust and moments against the measured loads, separates from
       the jetpack platform, and transitions to stable hover &mdash; all under wind and jetpack
       disturbance.
+    </p>
+
+    <h2>What release actually looks like</h2>
+    <p>
+      The clearest argument for trimming before release is not a plot. These are the first
+      instants after separation under an imposed crossflow, running left to right across each
+      frame. The top pair is an untrimmed release, the bottom pair a force&ndash;torque trimmed
+      one, each shown at the same two instants after the release command.
+    </p>
+
+    <figure class="fig fig-pair">
+      <img src="pictures/projects/mahd/release-untrimmed-035.jpg" alt="Untrimmed release, earlier frame: the rotorcraft has lifted clear of the jetpack platform and its rotor plane is already tipped relative to the platform below it." width="672" height="378">
+      <img src="pictures/projects/mahd/release-untrimmed-05.jpg" alt="Untrimmed release, later frame: the tilt has grown and the airframe has moved downwind, with the rotor plane visibly inclined." width="672" height="378">
+      <img src="pictures/projects/mahd/release-trimmed-035.jpg" alt="Trimmed release, earlier frame: the rotorcraft rises with its rotor plane level and parallel to the platform." width="672" height="378">
+      <img src="pictures/projects/mahd/release-trimmed-05.jpg" alt="Trimmed release, later frame: the rotor plane remains close to level, with the vehicle holding its attitude as it climbs away." width="672" height="378">
+      <figcaption>
+        Release under imposed crossflow (arrows, left to right). Top: untrimmed. Bottom:
+        force&ndash;torque trimmed. Each row shows the same two instants after the release
+        command, with the platform visible below for reference.
+      </figcaption>
+    </figure>
+
+    <p>
+      Read the rotor plane against the platform edge underneath it. In the untrimmed case it
+      is already off level in the earlier frame, and by the later one the vehicle has rotated
+      further and shifted downwind &mdash; the attitude excursion is not something that
+      develops over the course of the climb, it is present as soon as the restraint releases,
+      and it grows. The trimmed case rises with the rotor plane close to parallel to the
+      platform and holds it there across both frames.
+    </p>
+    <p>
+      That is the whole case for trimming before release, visible without a single
+      measurement: the untrimmed vehicle inherits the residual moment at the interface and
+      spends its first instants of free flight fighting it, while the trimmed vehicle
+      separates from a balanced state and simply flies. Everything a controller does
+      afterwards starts from the attitude these frames show.
     </p>
 
     <h2>Background</h2>
