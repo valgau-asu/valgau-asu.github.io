@@ -147,11 +147,15 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
 
     <figure class="fig">
       <video controls loop playsinline preload="metadata" width="960" height="540"
-             poster="pictures/projects/mars-heli/poster-chopper-hover.jpg">
-        <source src="videos/mars-heli/chopper-hover.mp4" type="video/mp4">
+             poster="pictures/projects/mars-heli/poster-chopper-circles.jpg">
+        <source src="videos/mars-heli/chopper-circles.mp4" type="video/mp4">
         Your browser does not support embedded video.
       </video>
-      <figcaption>The Chopper flying a complete mission: takeoff, hover, descent and landing.</figcaption>
+      <figcaption>
+        The same circular mission on the Chopper. Six rotors and roughly 30 kg instead of
+        1.8 &mdash; the errors are larger, but the controller does not care which vehicle it
+        is driving.
+      </figcaption>
     </figure>
 
     <h2>The part where ground effect nearly ruins everything</h2>
@@ -181,6 +185,18 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
       <a href="project-neural-mpc.html">my PhD work</a> is about.
     </p>
 
+    <figure class="fig">
+      <video controls loop playsinline preload="metadata" width="960" height="540"
+             poster="pictures/projects/mars-heli/poster-chopper-hover.jpg">
+        <source src="videos/mars-heli/chopper-hover.mp4" type="video/mp4">
+        Your browser does not support embedded video.
+      </video>
+      <figcaption>
+        A complete mission with the feedforward doing its job: takeoff, hover, descent and a
+        landing that actually touches down.
+      </figcaption>
+    </figure>
+
     <h2>Learning to land</h2>
     <p>
       There is also a Gymnasium environment for the landing task, so it plugs into standard RL
@@ -195,6 +211,38 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
         Your browser does not support embedded video.
       </video>
       <figcaption>A PPO policy bringing Ingenuity down.</figcaption>
+    </figure>
+
+    <p>
+      Running the two against each other on the Chopper over a hundred seeds is the more
+      interesting comparison, and the result is a neat split rather than a win. The scripted
+      lander is the cascaded controller following a designed descent profile. The policy was
+      never given one and worked out its own.
+    </p>
+    <p>
+      <strong>PPO lands more often &mdash; 94% against 81% &mdash; and touches down slightly
+      softer.</strong> But the scripted controller puts the vehicle on the pad to within a
+      millimetre and essentially level, while the policy sets down about two thirds of a metre
+      off and a degree and a half out of level. One is more robust, the other is surgical when
+      it works. Which you want depends on whether your landing site is a prepared pad or a
+      field of rocks.
+    </p>
+
+    <figure class="fig fig-pair">
+      <video controls loop playsinline preload="metadata" width="640" height="360"
+             poster="pictures/projects/mars-heli/poster-chopper-scripted-landing.jpg">
+        <source src="videos/mars-heli/chopper-scripted-landing.mp4" type="video/mp4">
+        Your browser does not support embedded video.
+      </video>
+      <video controls loop playsinline preload="metadata" width="640" height="360"
+             poster="pictures/projects/mars-heli/poster-chopper-ppo-landing.jpg">
+        <source src="videos/mars-heli/chopper-ppo-landing.mp4" type="video/mp4">
+        Your browser does not support embedded video.
+      </video>
+      <figcaption>
+        The Chopper landing twice: the scripted baseline on the left, the trained PPO policy
+        on the right.
+      </figcaption>
     </figure>
 
     <p class="note">
