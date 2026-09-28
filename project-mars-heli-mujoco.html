@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>/* Apply a stored theme before first paint so the page never flashes. */
+try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mars-Heli-MuJoCo — Valentin Gaucher</title>
+<meta name="description" content="An open-source MuJoCo simulator for Mars rotorcraft GNC: Ingenuity and the six-rotor Chopper concept, with ground effect, sensor models, cascaded/LQR/MPC control and a reinforcement learning landing task.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=6">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">Valentin Gaucher</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">About</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="phd-research.html">PhD Research</a></li>
+      <li><a href="other-projects.html" aria-current="page">Other Projects</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="newsletter.html">Newsletter</a></li>
+    </ul>
+    <button class="theme-toggle" type="button" aria-label="Switch theme"></button>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap prose">
+
+    <p class="crumb"><a href="other-projects.html">&larr; Other Projects</a></p>
+
+    <p class="course-badge">Personal project &middot; open source</p>
+    <h1>Mars-Heli-MuJoCo</h1>
+    <p class="project-meta">
+      A simulator for flying Mars helicopters at your desk. Built over a few weeks, for fun.
+    </p>
+    <div class="pub-links">
+      <a href="https://github.com/valgau-asu/mars-heli-mujoco" target="_blank" rel="noopener">Code (GitHub)</a>
+    </div>
+
+    <figure class="fig">
+      <video controls loop playsinline preload="metadata" width="960" height="540"
+             poster="pictures/projects/mars-heli/poster-ingenuity-circles.jpg">
+        <source src="videos/mars-heli/ingenuity-circles.mp4" type="video/mp4">
+        Your browser does not support embedded video.
+      </video>
+      <figcaption>
+        Ingenuity flying a circular mission under MPC. The green volume is the navigation
+        camera&rsquo;s field of view intersected with the ground; the yellow line is the laser
+        altimeter ray.
+      </figcaption>
+    </figure>
+
+    <h2>Why</h2>
+    <p>
+      Flying on Mars is genuinely strange. The atmosphere is one or two percent of Earth&rsquo;s
+      density, so rotors have to spin near the limit set by tip Mach number. Gravity is 38% of
+      ours, which helps. The thin air provides almost no aerodynamic damping, which is why
+      Ingenuity ended up with very stiff rotors and fast, lightly damped rigid-body dynamics.
+      And no facility on Earth reproduces Martian density and gravity at the same time in free
+      flight, so you cannot simply go and test it.
+    </p>
+    <p>
+      Which makes simulation the whole development cycle. JPL has one &mdash; HeliCAT, which
+      supported Ingenuity from concept through flight operations &mdash; but it is not public.
+      The good open aerial simulators are all aimed at terrestrial multirotors. So there was a
+      gap, and it looked like a fun way to spend a few weeks.
+    </p>
+
+    <h2>What it is</h2>
+    <p>
+      An open-source simulator on top of MuJoCo, modelling two vehicles: <strong>Ingenuity</strong>,
+      the coaxial helicopter that actually flew, and the six-rotor <strong>Mars Chopper</strong>
+      concept &mdash; a far bigger machine, roughly 4 m tip to tip and 30 kg, designed to carry
+      science payloads over kilometres.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/mars-heli/chopper-views.jpg" alt="Six-panel render of the Mars Chopper hovering: isometric, front, side and top views showing the six rotors and the green camera field-of-view volume, plus the ideal navigation camera image and the same image through the sensor model." width="1400" height="700">
+      <figcaption>
+        The Chopper hovering at 3 m. Bottom right is the navigation camera run through the
+        sensor model &mdash; lens distortion, vignetting, blur and noise &mdash; against the
+        ideal render next to it.
+      </figcaption>
+    </figure>
+
+    <h3>The one decision that made it work</h3>
+    <p>
+      Rotor speeds and swashplate servo positions are MuJoCo <em>activation states</em> rather
+      than something bolted on outside the engine. That sounds like a plumbing detail and is
+      actually the whole trick: it means the engine integrates the complete vehicle state, and
+      MuJoCo&rsquo;s finite-difference derivatives of the transition function can see the
+      actuators too. Trim, linearization, LQR and MPC then fall out of the simulator almost for
+      free, instead of needing a separate hand-derived model that drifts out of sync with the
+      one you are actually flying.
+    </p>
+    <p>
+      The rotor model is anchored to real flight data rather than invented: momentum-theory
+      thrust and torque coefficients reproduce Ingenuity&rsquo;s 2700 rpm hover point at a
+      density of 0.014 kg/m&sup3;, and the cyclic control effectiveness matches the pitch
+      control derivative identified from actual flights.
+    </p>
+
+    <h3>And the rest of the world</h3>
+    <p>
+      Following the way HeliCAT is structured, the vehicle sits inside a set of reduced-order
+      models: ground effect, IMU and laser-altimeter error models, a camera with lens
+      distortion, vignetting, blur and sensor noise, dust-dependent illumination, and mean wind
+      with Dryden turbulence. Rotor-wash dust gets kicked up in ground effect, mostly because it
+      looks good.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/mars-heli/ingenuity-views.jpg" alt="Six-panel render of Ingenuity hovering at 1.5 metres, showing isometric, front, side and top views with the camera field-of-view volume and altimeter ray, plus the ideal and sensor-model navigation camera images." width="1400" height="700">
+      <figcaption>Ingenuity hovering at 1.5 m, same set of views.</figcaption>
+    </figure>
+
+    <h2>Three controllers, one argument</h2>
+    <p>
+      There is a vehicle-agnostic cascaded controller, plus LQR and linear MPC built on the
+      finite-difference linearization. Flying all three through the same circular mission makes
+      the case better than any amount of prose.
+    </p>
+
+    <figure class="fig">
+      <img src="pictures/projects/mars-heli/circles-comparison.jpg" alt="Plot of position error against time for Ingenuity flying circles under three controllers: cascaded at 2.7 cm RMS, LQR at 5.2 cm, and MPC at 0.6 cm, with error spikes at entry and exit of the circle." width="736" height="448">
+      <figcaption>
+        The same circle, three controllers. The spikes are the entry and exit of the turn,
+        where the reference acceleration changes fastest.
+      </figcaption>
+    </figure>
+
+    <p>
+      The cascaded controller settles into a constant lag through the turn. LQR does worse,
+      because it is reacting to an error it has no way to anticipate. MPC knows the path is
+      coming and cuts the RMS error by a factor of several, at well under a millisecond per
+      control step. Across both vehicles and all three missions, tracking lands somewhere
+      between 1.4 cm and 11.6 cm, and the whole thing runs 15 to 31 times faster than real time
+      on a laptop CPU.
+    </p>
+
+    <figure class="fig">
+      <video controls loop playsinline preload="metadata" width="960" height="540"
+             poster="pictures/projects/mars-heli/poster-chopper-hover.jpg">
+        <source src="videos/mars-heli/chopper-hover.mp4" type="video/mp4">
+        Your browser does not support embedded video.
+      </video>
+      <figcaption>The Chopper flying a complete mission: takeoff, hover, descent and landing.</figcaption>
+    </figure>
+
+    <h2>The part where ground effect nearly ruins everything</h2>
+    <p>
+      This was my favourite thing to come out of it, and it is the one result that genuinely
+      surprised me.
+    </p>
+    <p>
+      Sitting on the ground, Ingenuity&rsquo;s rotors get about a <strong>19% lift bonus</strong>
+      from the ground cushion. The vehicle&rsquo;s entire thrust margin is about
+      <strong>7.5%</strong>. The cushion is more than twice the control authority.
+    </p>
+    <p>
+      Simulate that honestly and the flight falls apart in a very specific, very funny way. The
+      helicopter lifts off by itself during the idle phase, before it has been told to climb. It
+      then lags its reference on the way up. And on the way down it simply refuses to land
+      &mdash; hovering 12 to 19 cm above the ground on its own cushion until the rotors are
+      cut, at which point the landing stops being a landing and becomes a drop. Maximum tracking
+      error goes from 1.6 cm to 19.0 cm.
+    </p>
+    <p>
+      The fix is a feedforward term driven by the laser altimeter, which knows how high you are
+      and therefore how much free lift you are about to get. With it, the error goes back to
+      1.4 cm and the vehicle lands properly. This is not an artefact of a toy model &mdash; a
+      small thrust margin against a large ground cushion is a real characteristic of Mars
+      rotorcraft, and it is exactly the kind of near-ground behaviour that
+      <a href="project-neural-mpc.html">my PhD work</a> is about.
+    </p>
+
+    <h2>Learning to land</h2>
+    <p>
+      There is also a Gymnasium environment for the landing task, so it plugs into standard RL
+      tooling, with a PPO policy and a scripted baseline built on the cascaded controller to
+      compare against.
+    </p>
+
+    <figure class="fig">
+      <video controls loop playsinline preload="metadata" width="640" height="360"
+             poster="pictures/projects/mars-heli/poster-ppo-landing.jpg">
+        <source src="videos/mars-heli/ingenuity-ppo-landing.mp4" type="video/mp4">
+        Your browser does not support embedded video.
+      </video>
+      <figcaption>A PPO policy bringing Ingenuity down.</figcaption>
+    </figure>
+
+    <p class="note">
+      Everything is on
+      <a href="https://github.com/valgau-asu/mars-heli-mujoco" target="_blank" rel="noopener">GitHub</a>
+      &mdash; models, controllers, the RL task, the renderer and the scripts that produced every
+      figure and video on this page. A full technical write-up documenting the models and their
+      equations is in preparation.
+    </p>
+
+    <div class="pub-links">
+      <a href="https://github.com/valgau-asu/mars-heli-mujoco" target="_blank" rel="noopener">Code (GitHub)</a>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>&copy; <span id="year">2026</span> Valentin Gaucher</span>
+    <span><a href="mailto:vgaucher@asu.edu">vgaucher@asu.edu</a></span>
+  </div>
+</footer>
+
+<script src="js/main.js?v=2"></script>
+</body>
+</html>
