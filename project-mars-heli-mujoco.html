@@ -136,7 +136,10 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
 
     <figure class="fig">
       <img src="pictures/projects/mars-heli/ingenuity-views.jpg" alt="Six-panel render of Ingenuity hovering at 1.5 metres, showing isometric, front, side and top views with the camera field-of-view volume and altimeter ray, plus the ideal and sensor-model navigation camera images." width="1400" height="700">
-      <figcaption>Ingenuity hovering at 1.5 m, same set of views.</figcaption>
+      <figcaption>
+        Ingenuity hovering at 1.5 m, same set of views &mdash; the vehicle whose final flight
+        I wrote about in <a href="post-ingenuity-hard-landing.html">the newsletter</a>.
+      </figcaption>
     </figure>
 
     <h2>Three controllers, one argument</h2>
@@ -172,7 +175,8 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
       <figcaption>
         The same circular mission on the Chopper. Six rotors and roughly 30 kg instead of
         1.8 &mdash; the errors are larger, but the controller does not care which vehicle it
-        is driving.
+        is driving. This is the class of vehicle
+        <a href="project-mahd.html">MAHD</a> is designed to put on the surface.
       </figcaption>
     </figure>
 
@@ -193,6 +197,14 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
       &mdash; hovering 12 to 19 cm above the ground on its own cushion until the rotors are
       cut, at which point the landing stops being a landing and becomes a drop. Maximum tracking
       error goes from 1.6 cm to 19.0 cm.
+    </p>
+    <p>
+      The real Ingenuity&rsquo;s last landing went wrong for entirely different reasons &mdash;
+      a navigation failure rather than an aerodynamic one, which I went through in
+      <a href="post-ingenuity-hard-landing.html">the newsletter</a> and which Veritasium
+      <a href="https://www.youtube.com/watch?v=20vUNgRdB4o" target="_blank" rel="noopener">explains
+      on video</a>. But it makes the same broader point: the last metre is where a Mars
+      rotorcraft has the least margin of any kind.
     </p>
     <p>
       The fix is a feedforward term driven by the laser altimeter, which knows how high you are
@@ -219,7 +231,10 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
     <p>
       There is also a Gymnasium environment for the landing task, so it plugs into standard RL
       tooling, with a PPO policy and a scripted baseline built on the cascaded controller to
-      compare against.
+      compare against. Arriving at the surface under your own rotors is the part that worries
+      people, which is the whole premise of <a href="project-mahd.html">MAHD</a> &mdash; there,
+      a jetpack carries the vehicle to a controlled near-hover so it never has to do this from
+      altitude.
     </p>
 
     <figure class="fig">
