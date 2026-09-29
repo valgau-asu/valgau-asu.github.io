@@ -72,6 +72,17 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
       The good open aerial simulators are all aimed at terrestrial multirotors. So there was a
       gap, and it looked like a fun way to spend a few weeks.
     </p>
+    <p>
+      There is also a reason to care about the near-ground part specifically. Ingenuity&rsquo;s
+      seventy-second and final flight ended in a hard landing, and the failure chain starts
+      with a navigation system that had nothing to track over featureless sand and ends with
+      all four blades broken. I pulled that sequence apart in
+      <a href="post-ingenuity-hard-landing.html">the newsletter</a>, and Veritasium
+      <a href="https://www.youtube.com/watch?v=20vUNgRdB4o" target="_blank" rel="noopener">covered
+      it well on video</a>. Simulating that vehicle, with a camera and an altimeter that lie to
+      you the way real ones do, is a more interesting exercise once you know how the real one
+      ended.
+    </p>
 
     <h2>What it is</h2>
     <p>
@@ -79,6 +90,13 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
       the coaxial helicopter that actually flew, and the six-rotor <strong>Mars Chopper</strong>
       concept &mdash; a far bigger machine, roughly 4 m tip to tip and 30 kg, designed to carry
       science payloads over kilometres.
+    </p>
+    <p>
+      Getting something that size down to the surface in one piece is a separate problem, and
+      the one I worked on at NASA JPL: <a href="project-mahd.html">Mid-Air Helicopter
+      Deployment</a> delivers exactly this class of rotorcraft by jetpack instead of a sky
+      crane, and hands it over in mid-air already flying. This simulator picks the vehicle up
+      roughly where that architecture lets go of it.
     </p>
 
     <figure class="fig">
