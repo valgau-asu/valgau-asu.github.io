@@ -55,11 +55,15 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
     </div>
 
     <figure class="fig fig-wide">
-      <img src="pictures/projects/lcss-hero.png" alt="UAV trajectories after wall impact in MuJoCo: the dual quaternion controller in blue recovers close to the wall, the matrix-based baseline in green loops away and drifts." width="1200" height="675">
+      <video controls loop autoplay muted playsinline preload="metadata" width="960" height="540"
+             poster="pictures/projects/poster-dq-collision.jpg">
+        <source src="videos/dq_collision/dq-collision.mp4" type="video/mp4">
+        Your browser does not support embedded video.
+      </video>
       <figcaption>
-        Collision recovery in MuJoCo. The dual quaternion framework (blue) damps the
-        post-impact linear and angular oscillation; the traditional matrix-based
-        approach (green) drifts away from the contact point.
+        Collision recovery in MuJoCo. The dual quaternion framework damps the post-impact
+        linear and angular oscillation; the traditional matrix-based approach drifts away
+        from the contact point.
       </figcaption>
     </figure>
 

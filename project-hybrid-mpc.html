@@ -161,6 +161,18 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
     </p>
 
     <figure class="fig fig-wide">
+      <video controls loop playsinline preload="metadata" width="960" height="540"
+             poster="pictures/projects/poster-hmp-bouncing.jpg">
+        <source src="videos/hmp_mpc/bouncing_ball.mp4" type="video/mp4">
+        Your browser does not support embedded video.
+      </video>
+      <figcaption>
+        The benchmark running side by side: the proposed time-aware formulation on the left,
+        fixed-grid saltation MPC on the right, both landing on the oscillating platform.
+      </figcaption>
+    </figure>
+
+    <figure class="fig fig-wide">
       <img src="pictures/projects/cdc-performance.png" alt="Height tracking and contact error over time for four controllers: saltation MPC, TA MPCC, contact MIQP, and HMP-MPC." width="1200" height="745">
       <figcaption>Closed-loop landing on the moving platform. The fixed-grid saltation MPC keeps rebounding; HMP-MPC settles.</figcaption>
     </figure>
@@ -232,6 +244,24 @@ try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribu
       \(v^+ = -e\,v^-\), model error enters only in proportion to \(v^-\). Arriving slowly
       attenuates the error rather than leaving the controller to reject it afterwards.
     </p>
+
+    <h2>Application</h2>
+    <p>
+      The bouncing mass is a benchmark, but the motivating case is a real one: landing a
+      rotorcraft on a platform that will not hold still. A ship deck or a floating pad moves
+      under the vehicle throughout the descent, so the moment of touchdown is something the
+      controller chooses rather than something that merely happens to it &mdash; which is
+      exactly the quantity this formulation lifts into the decision vector.
+    </p>
+
+    <figure class="fig fig-wide">
+      <img src="pictures/projects/cdc-strobe.jpg" alt="Strobe composite of a quadrotor descending in a sequence of overlaid poses onto a floating landing platform at sea, with the final frames settling onto the marked pad." width="1600" height="900">
+      <figcaption>
+        A quadrotor descending onto a floating platform at sea, shown as a strobe of its
+        trajectory. The deck oscillates with the swell, so the contact instant has to be
+        planned, not inherited.
+      </figcaption>
+    </figure>
 
     <h2>What this gives you</h2>
     <ul>
